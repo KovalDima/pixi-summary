@@ -2,6 +2,7 @@ import Stats from "stats.js";
 import {initDevtools as initPixiDevTools} from "@pixi/devtools";
 import {GUIManager} from "./tools/gui/tools/GUIManager";
 import type {App} from "../App";
+import {GUIContainersHighlighter} from "./tools/gui/integrators/GUIContainersHighlighter";
 
 export class DevTools {
     private readonly App: App;
@@ -18,6 +19,8 @@ export class DevTools {
 
     public initGUI() {
         const guiManager = new GUIManager();
+
+        new GUIContainersHighlighter(guiManager, this.App);
 
         this.App.app.ticker.add(() => {
             guiManager.update();
