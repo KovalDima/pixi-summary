@@ -26,9 +26,15 @@ export class ContainersHighlighter {
 
         this.graphics.clear();
         this.highlightContainers(this.app.stage);
+        this.app.stage.removeChild(this.graphics);
+        this.app.stage.addChild(this.graphics);
     }
 
     private highlightContainers(displayObject: DisplayObject) {
+        if (displayObject === this.graphics) {
+            return;
+        }
+
         if (displayObject !== this.app.stage) {
             const bounds = displayObject.getBounds();
             const borderWidth = 3;
