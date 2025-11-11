@@ -1,5 +1,5 @@
 import {Application} from "pixi.js";
-import {App} from "./src/App";
+import {App} from "./App";
 
 const appRoot = document.getElementById("app") as HTMLElement;
 const pixiApp = new Application({

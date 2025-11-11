@@ -1,9 +1,7 @@
 {
   "include": [
     "src/**/*.ts",
-    "src/**/*.d.ts",
-    "./index.ts",
-    "./index.d.ts"
+    "src/**/*.d.ts"
   ],
   "compilerOptions": {
     "strict": true,

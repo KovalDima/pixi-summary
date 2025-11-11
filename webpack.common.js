@@ -3,7 +3,7 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
 
 module.exports = {
-    entry: "./index.ts",
+    entry: "./src/index.ts",
     output: {
         filename: "js/[name].[contenthash].js",
         path: path.resolve(__dirname, "dist"),
@@ -23,7 +23,7 @@ module.exports = {
     },
     plugins: [
         new HtmlWebpackPlugin({
-            template: "./index.html",
+            template: "./src/index.html",
             filename: "index.html",
         }),
         new CopyPlugin({
