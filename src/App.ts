@@ -11,7 +11,7 @@ export class App {
     private initDevTools() {
         if (__DEV__) {
             const { DevTools } = require("./dev/DevTools");
-            new DevTools(this).init();
+            new DevTools(this).init().initGUI();
         }
     }
 }
