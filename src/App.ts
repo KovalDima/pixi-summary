@@ -1,17 +1,19 @@
-import { type Application, type Texture, Container, Sprite } from "pixi.js";
+import { type Application } from "pixi.js";
 import { SceneLayerManager } from "./core/SceneLayerManager";
 import { AssetManager } from "./core/AssetManager";
-import {ResponsiveContainer, type TResponsiveMode} from "./view/ResponsiveContainer";
+import { ResponsiveContainer, ResponsiveMode } from "./view/ResponsiveContainer";
+import { SceneFactory } from "./core/SceneFactory";
 
 export class App {
     public readonly app: Application;
     public readonly sceneLayerManager: SceneLayerManager;
-    public gameContainer: ResponsiveContainer;
+    private readonly sceneFactory: SceneFactory;
+    public gameContainer: ResponsiveContainer | null = null;
 
     constructor(app: Application) {
         this.app = app;
         this.sceneLayerManager = new SceneLayerManager(this.app);
-        this.gameContainer = new ResponsiveContainer(this.app.renderer);
+        this.sceneFactory = new SceneFactory(this.app.renderer);
 
         void this.setup();
         this.initDevTools();
@@ -19,23 +21,12 @@ export class App {
 
     private async setup() {
         const textures = await AssetManager.loadCoreAssets();
-        const background = this.createResponsiveContainer(textures.background, "cover");
+        const background = this.sceneFactory.createResponsiveContainer(textures.background, ResponsiveMode.cover);
 
-        this.gameContainer = this.createResponsiveContainer(textures.gameMap, "contain");
+        this.gameContainer = this.sceneFactory.createResponsiveContainer(textures.gameMap, ResponsiveMode.contain);
 
         this.sceneLayerManager.backgroundLayer.addChild(background);
         this.sceneLayerManager.mainLayer.addChild(this.gameContainer);
-    }
-
-    private createResponsiveContainer(texture: Texture, mode: TResponsiveMode) {
-        const container = new ResponsiveContainer(this.app.renderer, {
-            logicalWidth: texture.width,
-            logicalHeight: texture.height,
-            mode
-        });
-
-        container.addChild(new Sprite(texture));
-        return container;
     }
 
     private initDevTools() {

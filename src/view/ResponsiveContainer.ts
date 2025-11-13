@@ -1,26 +1,29 @@
 import { Container, type IRenderer, type IDestroyOptions } from "pixi.js";
 
-export type TResponsiveMode = "cover" | "contain";
+export enum ResponsiveMode {
+    cover = "cover",
+    contain = "contain"
+}
 
 export type TResponsiveOptions = {
     logicalWidth: number;
     logicalHeight: number;
-    mode: TResponsiveMode;
+    mode: ResponsiveMode;
 }
 
 export class ResponsiveContainer extends Container {
     private renderer: IRenderer;
     private readonly logicalWidth: number;
     private readonly logicalHeight: number;
-    private readonly mode: TResponsiveMode;
+    private readonly mode: ResponsiveMode;
 
-    constructor(renderer: IRenderer, options?: TResponsiveOptions) {
+    constructor(renderer: IRenderer, options: TResponsiveOptions) {
         super();
 
         this.renderer = renderer;
-        this.logicalWidth = options?.logicalWidth ?? 1;
-        this.logicalHeight = options?.logicalHeight ?? 1;
-        this.mode = options?.mode ?? "contain";
+        this.logicalWidth = options.logicalWidth;
+        this.logicalHeight = options.logicalHeight;
+        this.mode = options.mode;
 
         this.resize();
         this.renderer.on("resize", this.resize, this);
@@ -35,9 +38,9 @@ export class ResponsiveContainer extends Container {
 
         let scale = 1.0;
 
-        if (this.mode === "cover") {
+        if (this.mode === ResponsiveMode.cover) {
             scale = screenRatio > logicalRatio ? screenWidth / this.logicalWidth : screenHeight / this.logicalHeight;
-        } else if (this.mode === "contain") {
+        } else if (this.mode === ResponsiveMode.contain) {
             scale = screenRatio > logicalRatio ? screenHeight / this.logicalHeight : screenWidth / this.logicalWidth;
         }
 
