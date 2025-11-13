@@ -1,5 +1,5 @@
 import { Application, Assets} from "pixi.js";
-import {App} from "./App";
+import { App } from "./App";
 import { manifest } from "./core/assets.manifest";
 
 const appRoot = document.getElementById("app") as HTMLElement;

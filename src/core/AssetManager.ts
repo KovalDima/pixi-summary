@@ -1,9 +1,13 @@
 import { Assets } from "pixi.js";
-import { AssetsBundleConstants } from "../constants/AssetsBundleConstants";
+import { AssetsConstants } from "../constants/AssetsConstants";
 
 export class AssetManager {
     public static async loadCoreAssets() {
-        return await Assets.loadBundle(AssetsBundleConstants.CORE_BUNDLE);
+        return await Assets.loadBundle(AssetsConstants.CORE_BUNDLE);
+    }
+
+    public static async loadGameAssets() {
+        return await Assets.loadBundle(AssetsConstants.GAME_BUNDLE);
     }
 }
 
