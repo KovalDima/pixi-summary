@@ -1,9 +1,9 @@
-import { Sprite, Texture, Renderer } from "pixi.js";
+import { Sprite, Texture, type IRenderer } from "pixi.js";
 
 export class Background extends Sprite {
-    private renderer: Renderer;
+    private renderer: IRenderer;
 
-    constructor(texture: Texture, renderer: Renderer) {
+    constructor(texture: Texture, renderer: IRenderer) {
         super(texture);
 
         this.renderer = renderer;
@@ -21,7 +21,6 @@ export class Background extends Sprite {
         const screenRatio = screenWidth / screenHeight;
         const textureRatio = this.texture.width / this.texture.height;
 
-        // ??
         if (screenRatio > textureRatio) {
             this.width = screenWidth;
             this.height = screenWidth / textureRatio;
