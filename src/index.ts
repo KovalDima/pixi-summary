@@ -1,5 +1,7 @@
 import {Application} from "pixi.js";
 import {App} from "./App";
+import { Assets } from "pixi.js";
+import { manifest } from "./core/assets.manifest";
 
 const appRoot = document.getElementById("app") as HTMLElement;
 const pixiApp = new Application({
@@ -9,4 +11,6 @@ const pixiApp = new Application({
 });
 
 appRoot.appendChild(pixiApp.view as HTMLCanvasElement);
-new App(pixiApp);
+Assets.init({ manifest }).then(() => {
+    new App(pixiApp);
+});
