@@ -36,12 +36,15 @@ export class ResponsiveContainer extends Container {
         const screenRatio = screenWidth / screenHeight;
         const logicalRatio = this.logicalWidth / this.logicalHeight;
 
+        const widthCoeff = screenWidth / this.logicalWidth;
+        const heightCoeff = screenHeight / this.logicalHeight;
+
         let scale = 1.0;
 
         if (this.mode === ResponsiveMode.cover) {
-            scale = screenRatio > logicalRatio ? screenWidth / this.logicalWidth : screenHeight / this.logicalHeight;
+            scale = screenRatio > logicalRatio ? widthCoeff : heightCoeff;
         } else if (this.mode === ResponsiveMode.contain) {
-            scale = screenRatio > logicalRatio ? screenHeight / this.logicalHeight : screenWidth / this.logicalWidth;
+            scale = screenRatio > logicalRatio ? heightCoeff : widthCoeff;
         }
 
         this.scale.set(scale);
