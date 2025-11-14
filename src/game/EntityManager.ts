@@ -18,6 +18,10 @@ export class EntityManager {
 
     private towers: Sprite[] = [];
 
+    private readonly towerConfig = {
+        scale: 0.16,
+    }
+
     constructor(gameContainer: Container, animatedSpriteService: AnimatedSpriteService, spriteService: SpriteService) {
         this.gameContainer = gameContainer;
         this.animatedSpriteService = animatedSpriteService;
@@ -41,14 +45,10 @@ export class EntityManager {
         const towerSprite = this.spriteService.createSprite(AssetsConstants.TOWER_1_ALIAS);
 
         towerSprite.position.set(position.x, position.y);
-        towerSprite.scale.set(0.16);
+        towerSprite.scale.set(this.towerConfig.scale);
 
         this.towers.push(towerSprite);
         this.gameContainer.addChild(towerSprite);
-    }
-
-    public checkIsPlatformOccupied(position: IPointData) {
-        return this.towers.some((tower) => tower.position.x === position.x && tower.position.y === position.y);
     }
 
     // TODO:
