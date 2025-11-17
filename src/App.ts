@@ -40,6 +40,7 @@ export class App {
 
         this.gameContainer = this.sceneFactory.createResponsiveContainer(textures.gameMap, ResponsiveMode.contain);
         this.gameContainer.eventMode = "static";
+        this.gameContainer.sortableChildren = true;
 
         this.sceneLayerManager.backgroundLayer.addChild(background);
         this.sceneLayerManager.mainLayer.addChild(this.gameContainer);
