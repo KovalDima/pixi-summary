@@ -16,7 +16,6 @@ export class App {
     private readonly animatedSpriteService: AnimatedSpriteService;
     private readonly spriteService: SpriteService;
     public gameContainer: ResponsiveContainer | null = null;
-    private towerPlacementController: TowerPlacementController | null = null;
     private entityManager!: EntityManager; // how we can get rid of "!" ?
 
     constructor(app: Application) {
@@ -40,19 +39,17 @@ export class App {
 
         this.gameContainer = this.sceneFactory.createResponsiveContainer(textures.gameMap, ResponsiveMode.contain);
         this.gameContainer.eventMode = "static";
-        this.gameContainer.sortableChildren = true;
 
         this.sceneLayerManager.backgroundLayer.addChild(background);
         this.sceneLayerManager.mainLayer.addChild(this.gameContainer);
 
         this.entityManager = new EntityManager(this.gameContainer, this.animatedSpriteService, this.spriteService);
 
-        this.towerPlacementController = new TowerPlacementController(
+        new TowerPlacementController(
             this.gameContainer,
             this.entityManager,
             this.spriteService
-        );
-        this.towerPlacementController.init();
+        ).init();
     }
 
     private runInitialEffects() {

@@ -1,10 +1,8 @@
 import { type Container, type IPointData, Sprite } from "pixi.js";
-import { AnimatedSpriteService } from "../services/AnimatedSpriteService";
-import { AssetsConstants } from "../constants/AssetsConstants";
+import { AnimatedSpriteService} from "../services/AnimatedSpriteService";
+import { AssetsConstants} from "../constants/AssetsConstants";
 import { AnimationConstants } from "../constants/AnimationConstants";
 import { type SpriteService } from "../services/SpriteService";
-import { DepthCalculator } from "../utils/DepthCalculator";
-import { type TTowerConfig, TowerType } from "./towers/TowerTypes";
 
 export type TFlameConfig = {
     position: IPointData,
@@ -19,6 +17,10 @@ export class EntityManager {
     private readonly spriteService: SpriteService;
 
     private towers: Sprite[] = [];
+
+    private readonly towerConfig = {
+        scale: 0.16,
+    }
 
     constructor(gameContainer: Container, animatedSpriteService: AnimatedSpriteService, spriteService: SpriteService) {
         this.gameContainer = gameContainer;
@@ -39,33 +41,14 @@ export class EntityManager {
         this.gameContainer.addChild(flameAnim);
     }
 
-    public addTower(config: TTowerConfig, position: IPointData) {
-        let towerObject;
-        const towerScale = DepthCalculator.getTowerScale(position.y);
-        const towerZIndex = position.y;
+    public addTower(position: IPointData) {
+        const towerSprite = this.spriteService.createSprite(AssetsConstants.TOWER_1_ALIAS);
 
-        switch (config.type) {
-            case TowerType.REGULAR_TOWER:
-                towerObject = this.spriteService.createSprite(config.assetAlias);
-                break;
+        towerSprite.position.set(position.x, position.y);
+        towerSprite.scale.set(this.towerConfig.scale);
 
-            case TowerType.ARCHER_TOWER:
-                if (!config.animationName) {
-                    throw new Error(`Missing animationName for tower config: ${config.type}`)
-                }
-                towerObject = this.animatedSpriteService.createAnimation(config.assetAlias, config.animationName);
-                towerObject.loop = false;
-                towerObject.animationSpeed = 0.03;
-                break;
-        }
-
-
-        towerObject.position.set(position.x, position.y);
-        towerObject.scale.set(towerScale);
-        towerObject.zIndex = towerZIndex;
-
-        this.towers.push(towerObject);
-        this.gameContainer.addChild(towerObject);
+        this.towers.push(towerSprite);
+        this.gameContainer.addChild(towerSprite);
     }
 
     // TODO:

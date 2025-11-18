@@ -1,5 +1,4 @@
 import { type IPointData } from "pixi.js";
-import { TowerType } from "../game/towers/TowerTypes";
 
 export class GameConstants {
     public static readonly FLAME_POSITIONS: IPointData[] = [
@@ -8,22 +7,5 @@ export class GameConstants {
         { x: 205, y: 350 },
         { x: 830, y: 605 },
         { x: 435, y: 695 },
-    ];
-
-    public static readonly DEPTH_MIN_Y = 100;
-    public static readonly DEPTH_MAX_Y = 750;
-    public static readonly TOWER_MIN_SCALE = 0.14;
-    public static readonly TOWER_MAX_SCALE = 0.18;
-
-    public static readonly TOWER_BUTTON_SCALE = 0.15;
-    public static readonly TOWER_BUTTON_POSITIONS: { type: TowerType, position: IPointData }[] = [
-        {
-            type: TowerType.REGULAR_TOWER,
-            position: { x: 50, y: 950 },
-        },
-        {
-            type: TowerType.ARCHER_TOWER,
-            position: { x: 160, y: 950 },
-        }
     ];
 }
