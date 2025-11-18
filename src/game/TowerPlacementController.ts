@@ -4,11 +4,14 @@ import { type EntityManager } from "./EntityManager";
 import { GameConstants } from "../constants/GameConstants";
 import { TowerRegistry } from "./towers/TowerRegistry";
 import type { TTowerConfig } from "./towers/TowerTypes";
+import type { SoundService } from "../services/SoundService";
+import { AssetsConstants } from "../constants/AssetsConstants";
 
 export class TowerPlacementController {
     private readonly gameContainer: Container;
     private readonly entityManager: EntityManager;
     private readonly spriteService: SpriteService;
+    private readonly soundService: SoundService;
 
     private towerButtons: Map<string, Sprite> = new Map();
     private ghostTower: Sprite | null = null;
@@ -23,10 +26,16 @@ export class TowerPlacementController {
         zIndex: 10000,
     };
 
-    constructor(gameContainer: Container, entityManager: EntityManager, spriteService: SpriteService) {
+    constructor(
+        gameContainer: Container,
+        entityManager: EntityManager,
+        spriteService: SpriteService,
+        soundService: SoundService,
+    ) {
         this.gameContainer = gameContainer;
         this.entityManager = entityManager;
         this.spriteService = spriteService;
+        this.soundService = soundService;
     }
 
     public init() {
@@ -53,6 +62,7 @@ export class TowerPlacementController {
 
             towerButton.on("pointerdown", (e: FederatedPointerEvent) => {
                 e.stopPropagation();
+                this.soundService.play(AssetsConstants.SOUND_CLICK);
                 this.startPlacingTower(towerConfig);
             });
 
@@ -93,16 +103,17 @@ export class TowerPlacementController {
     }
 
     private onPlaceTower(e: FederatedPointerEvent) {
-        if (!this.ghostTower || !this.selectedTowerConfig) {
+        if (!this.selectedTowerConfig) {
             return;
         }
 
         if (this.isValidPlacement) {
             const localPos = this.gameContainer.toLocal(e.global);
             this.entityManager.addTower(this.selectedTowerConfig, localPos);
+            this.stopPlacing();
+        } else {
+            this.soundService.play(AssetsConstants.SOUND_FAIL_BUILD);
         }
-
-        this.stopPlacing();
     }
 
     private stopPlacing() {

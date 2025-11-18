@@ -12,11 +12,13 @@
   "license": "ISC",
   "types": "./index.d.ts",
   "dependencies": {
+    "howler": "^2.2.4",
     "pixi.js": "^7.4.3"
   },
   "devDependencies": {
     "@pixi/devtools": "^2.0.1",
     "@types/dat.gui": "^0.7.13",
+    "@types/howler": "^2.2.12",
     "@types/stats.js": "^0.17.4",
     "copy-webpack-plugin": "^13.0.1",
     "dat.gui": "^0.7.9",

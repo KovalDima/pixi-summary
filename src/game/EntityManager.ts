@@ -5,6 +5,7 @@ import { AnimationConstants } from "../constants/AnimationConstants";
 import { type SpriteService } from "../services/SpriteService";
 import { DepthCalculator } from "../utils/DepthCalculator";
 import { type TTowerConfig, TowerType } from "./towers/TowerTypes";
+import { type SoundService } from "../services/SoundService";
 
 export type TFlameConfig = {
     position: IPointData,
@@ -17,13 +18,20 @@ export class EntityManager {
     private readonly gameContainer: Container;
     private readonly animatedSpriteService: AnimatedSpriteService;
     private readonly spriteService: SpriteService;
+    private readonly soundService: SoundService;
 
     private towers: Sprite[] = [];
 
-    constructor(gameContainer: Container, animatedSpriteService: AnimatedSpriteService, spriteService: SpriteService) {
+    constructor(
+        gameContainer: Container,
+        animatedSpriteService: AnimatedSpriteService,
+        spriteService: SpriteService,
+        soundService: SoundService
+    ) {
         this.gameContainer = gameContainer;
         this.animatedSpriteService = animatedSpriteService;
         this.spriteService = spriteService;
+        this.soundService = soundService;
     }
 
     public addFlame(config: TFlameConfig) {
@@ -47,6 +55,7 @@ export class EntityManager {
         switch (config.type) {
             case TowerType.REGULAR_TOWER:
                 towerObject = this.spriteService.createSprite(config.assetAlias);
+                this.soundService.play(AssetsConstants.SOUND_REGULAR_TOWER_BUILD);
                 break;
 
             case TowerType.ARCHER_TOWER:
@@ -56,6 +65,7 @@ export class EntityManager {
                 towerObject = this.animatedSpriteService.createAnimation(config.assetAlias, config.animationName);
                 towerObject.loop = false;
                 towerObject.animationSpeed = 0.03;
+                this.soundService.play(AssetsConstants.SOUND_BUILD_PROCESS);
                 break;
         }
 

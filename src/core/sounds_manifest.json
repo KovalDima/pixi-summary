@@ -1,8 +1,8 @@
 {
   "basePath": "resources/sounds/",
   "sounds": {
-    "click": "click.mp3",
-    "building_process": "building-process.mp3",
+    "click": "click.m4a",
+    "building_process": "building-process.m4a",
     "regular_tower_built": "regular-tower-built.mp3",
     "fail_build": "fail-build.wav"
   }
