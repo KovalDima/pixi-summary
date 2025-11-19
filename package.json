@@ -1,5 +1,5 @@
 {
-  "name": "pixi-summary",
+  "name": "pixi-intro",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -8,10 +8,10 @@
     "start": "webpack serve --config webpack.dev.js",
     "build": "webpack --config webpack.prod.js"
   },
-  "author": "Dima",
+  "author": "Dima Koval",
   "license": "ISC",
-  "types": "./index.d.ts",
   "dependencies": {
+    "gsap": "^3.13.0",
     "howler": "^2.2.4",
     "pixi.js": "^7.4.3"
   },

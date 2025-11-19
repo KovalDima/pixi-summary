@@ -3,7 +3,7 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
 
 module.exports = {
-    entry: "./src/index.ts",
+    entry: "./src/ts/index.ts",
     output: {
         filename: "js/[name].[contenthash].js",
         path: path.resolve(__dirname, "dist"),
@@ -14,12 +14,16 @@ module.exports = {
             {
                 test: /\.ts$/,
                 use: "ts-loader",
+                include: path.resolve(__dirname, "src/ts"),
                 exclude: /node_modules/,
             },
         ],
     },
     resolve: {
         extensions: [".ts", ".js"],
+        alias: {
+            "res": path.resolve(__dirname, "../resources")
+        }
     },
     plugins: [
         new HtmlWebpackPlugin({
@@ -29,12 +33,16 @@ module.exports = {
         new CopyPlugin({
             patterns: [
                 {
-                    from: path.resolve(__dirname, "../resources"),
-                    to: "resources"
+                    context: path.resolve(__dirname, "src"),
+                    from: "**/*",
+                    to: "[path][name][ext]",
+                    globOptions: {
+                        ignore: ["**/ts/**", "**/index.html"],
+                    },
                 },
                 {
-                    from: path.resolve(__dirname, "assets"),
-                    to: "assets",
+                    from: path.resolve(__dirname, "../resources"),
+                    to: "resources"
                 }
             ],
         }),
