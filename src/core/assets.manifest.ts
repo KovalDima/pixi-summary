@@ -13,7 +13,9 @@ export const manifest = {
             name: AssetsConstants.GAME_BUNDLE,
             assets: [
                 { alias: AssetsConstants.FLAME_ANIM_ALIAS, src: "resources/spritesheets/flame_anim.json" },
-                { alias: AssetsConstants.TOWER_1_ALIAS, src: "resources/towers/tower_1.png" },
+                { alias: AssetsConstants.REGULAR_TOWER_ALIAS, src: "resources/towers/tower_1.png" },
+                { alias: AssetsConstants.ARCHER_TOWER_ALIAS, src: "resources/towers/tower_2_4.png" },
+                { alias: AssetsConstants.ARCHER_TOWER_ANIM_ALIAS, src: "resources/spritesheets/tower_2_progress.json" },
             ]
         }
     ],

@@ -8,6 +8,7 @@ import { EntityManager } from "./game/EntityManager";
 import { GameConstants } from "./constants/GameConstants";
 import { SpriteService } from "./services/SpriteService";
 import { TowerPlacementController } from "./game/TowerPlacementController";
+import { DomEventHelper } from "./helpers/DomEventHelper";
 
 export class App {
     public readonly app: Application;
@@ -17,6 +18,7 @@ export class App {
     private readonly spriteService: SpriteService;
     public gameContainer: ResponsiveContainer | null = null;
     private entityManager!: EntityManager; // how we can get rid of "!" ?
+    private readonly domEventHelper: DomEventHelper;
 
     constructor(app: Application) {
         this.app = app;
@@ -24,6 +26,7 @@ export class App {
         this.sceneFactory = new SceneFactory(this.app.renderer);
         this.animatedSpriteService = new AnimatedSpriteService();
         this.spriteService = new SpriteService();
+        this.domEventHelper = new DomEventHelper();
 
         this.setup().then(() => {
             this.runInitialEffects();
@@ -39,6 +42,7 @@ export class App {
 
         this.gameContainer = this.sceneFactory.createResponsiveContainer(textures.gameMap, ResponsiveMode.contain);
         this.gameContainer.eventMode = "static";
+        this.gameContainer.sortableChildren = true;
 
         this.sceneLayerManager.backgroundLayer.addChild(background);
         this.sceneLayerManager.mainLayer.addChild(this.gameContainer);
@@ -48,8 +52,9 @@ export class App {
         new TowerPlacementController(
             this.gameContainer,
             this.entityManager,
-            this.spriteService
-        ).init();
+            this.spriteService,
+            this.domEventHelper
+        );
     }
 
     private runInitialEffects() {
