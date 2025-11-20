@@ -8,7 +8,6 @@ import { EntityManager } from "./game/EntityManager";
 import { GameConstants } from "./constants/GameConstants";
 import { SpriteService } from "./services/SpriteService";
 import { TowerPlacementController } from "./game/TowerPlacementController";
-import { SoundService } from "./services/SoundService";
 
 export class App {
     public readonly app: Application;
@@ -16,9 +15,7 @@ export class App {
     private readonly sceneFactory: SceneFactory;
     private readonly animatedSpriteService: AnimatedSpriteService;
     private readonly spriteService: SpriteService;
-    private readonly soundService: SoundService;
     public gameContainer: ResponsiveContainer | null = null;
-    private towerPlacementController: TowerPlacementController | null = null;
     private entityManager!: EntityManager; // how we can get rid of "!" ?
 
     constructor(app: Application) {
@@ -27,11 +24,10 @@ export class App {
         this.sceneFactory = new SceneFactory(this.app.renderer);
         this.animatedSpriteService = new AnimatedSpriteService();
         this.spriteService = new SpriteService();
-        this.soundService = new SoundService();
 
         this.setup().then(() => {
             this.runInitialEffects();
-        });
+        })
         this.initDevTools();
     }
 
@@ -43,25 +39,17 @@ export class App {
 
         this.gameContainer = this.sceneFactory.createResponsiveContainer(textures.gameMap, ResponsiveMode.contain);
         this.gameContainer.eventMode = "static";
-        this.gameContainer.sortableChildren = true;
 
         this.sceneLayerManager.backgroundLayer.addChild(background);
         this.sceneLayerManager.mainLayer.addChild(this.gameContainer);
 
-        this.entityManager = new EntityManager(
-            this.gameContainer,
-            this.animatedSpriteService,
-            this.spriteService,
-            this.soundService,
-        );
+        this.entityManager = new EntityManager(this.gameContainer, this.animatedSpriteService, this.spriteService);
 
-        this.towerPlacementController = new TowerPlacementController(
+        new TowerPlacementController(
             this.gameContainer,
             this.entityManager,
-            this.spriteService,
-            this.soundService,
-        );
-        this.towerPlacementController.init();
+            this.spriteService
+        ).init();
     }
 
     private runInitialEffects() {
