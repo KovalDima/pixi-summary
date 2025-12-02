@@ -5,10 +5,18 @@ export enum ResponsiveMode {
     contain = "contain"
 }
 
+export type TPaddings = {
+    top?: number,
+    bottom?: number,
+    left?: number,
+    right?: number,
+}
+
 export type TResponsiveOptions = {
     logicalWidth: number;
     logicalHeight: number;
     mode: ResponsiveMode;
+    paddings?: TPaddings;
 }
 
 export class ResponsiveContainer extends Container {
@@ -16,6 +24,7 @@ export class ResponsiveContainer extends Container {
     private readonly logicalWidth: number;
     private readonly logicalHeight: number;
     private readonly mode: ResponsiveMode;
+    private readonly paddings: Required<TPaddings>;
 
     constructor(renderer: IRenderer, options: TResponsiveOptions) {
         super();
@@ -25,6 +34,13 @@ export class ResponsiveContainer extends Container {
         this.logicalHeight = options.logicalHeight;
         this.mode = options.mode;
 
+        this.paddings = {
+            top: options.paddings?.top ?? 0,
+            bottom: options.paddings?.bottom ?? 0,
+            left: options.paddings?.left ?? 0,
+            right: options.paddings?.right ?? 0,
+        };
+
         this.resize();
         this.renderer.on("resize", this.resize, this);
     }
@@ -33,23 +49,27 @@ export class ResponsiveContainer extends Container {
         const screenWidth = this.renderer.screen.width;
         const screenHeight = this.renderer.screen.height;
 
-        const screenRatio = screenWidth / screenHeight;
+        const availableWidth = screenWidth - (this.paddings.left + this.paddings.right);
+        const availableHeight = screenHeight - (this.paddings.top + this.paddings.bottom);
+
+        const availableRatio = availableWidth / availableHeight;
         const logicalRatio = this.logicalWidth / this.logicalHeight;
 
-        const widthCoeff = screenWidth / this.logicalWidth;
-        const heightCoeff = screenHeight / this.logicalHeight;
+        const widthCoeff = availableWidth / this.logicalWidth;
+        const heightCoeff = availableHeight / this.logicalHeight;
 
         let scale = 1.0;
 
         if (this.mode === ResponsiveMode.cover) {
-            scale = screenRatio > logicalRatio ? widthCoeff : heightCoeff;
+            scale = availableRatio > logicalRatio ? widthCoeff : heightCoeff;
         } else if (this.mode === ResponsiveMode.contain) {
-            scale = screenRatio > logicalRatio ? heightCoeff : widthCoeff;
+            scale = availableRatio > logicalRatio ? heightCoeff : widthCoeff;
         }
 
         this.scale.set(scale);
-        this.x = (screenWidth - (this.logicalWidth * scale)) / 2;
-        this.y = (screenHeight - (this.logicalHeight * scale)) / 2;
+
+        this.x = this.paddings.left + (availableWidth - (this.logicalWidth * scale)) / 2;
+        this.y = this.paddings.top + (availableHeight - (this.logicalHeight * scale)) / 2;
     }
 
     public override destroy(options?: IDestroyOptions) {

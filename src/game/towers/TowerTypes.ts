@@ -7,6 +7,7 @@ export type TTowerConfig = {
     type: TowerType,
     assetAlias: string,
     iconAlias: string,
+    price: number,
     animationName?: string,
     animationSpeed?: number,
 }

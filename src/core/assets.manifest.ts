@@ -7,6 +7,7 @@ export const manifest = {
             assets: [
                 { alias: AssetsConstants.BACKGROUND_ALIAS, src: "resources/background/water.png" },
                 { alias: AssetsConstants.GAME_MAP_ALIAS, src: "resources/background/map.png" },
+                { alias: AssetsConstants.FONT_VCR_ALIAS, src: "resources/fonts/VCR_OSD_MONO.ttf" },
             ],
         },
         {

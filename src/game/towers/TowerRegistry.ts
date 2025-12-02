@@ -10,6 +10,7 @@ export class TowerRegistry {
                 type: TowerType.REGULAR_TOWER,
                 assetAlias: AssetsConstants.REGULAR_TOWER_ALIAS,
                 iconAlias: AssetsConstants.REGULAR_TOWER_ALIAS,
+                price: 100,
             }
         ],
         [
@@ -18,6 +19,7 @@ export class TowerRegistry {
                 type: TowerType.ARCHER_TOWER,
                 assetAlias: AssetsConstants.ARCHER_TOWER_ANIM_ALIAS,
                 iconAlias: AssetsConstants.ARCHER_TOWER_ALIAS,
+                price: 200,
                 animationName: AnimationConstants.ARCHER_TOWER_BUILDING,
                 animationSpeed: 0.03,
             }

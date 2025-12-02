@@ -26,4 +26,8 @@ export class GameConstants {
             position: { x: 160, y: 950 },
         }
     ];
+
+    public static readonly ISLAND_CENTER: IPointData = { x: 520, y: 460 };
+    public static readonly ISLAND_RADIUS = 410;
+    public static readonly ISLAND_RADIUS_SQUARED = this.ISLAND_RADIUS * this.ISLAND_RADIUS;
 }

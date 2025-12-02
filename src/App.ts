@@ -9,6 +9,9 @@ import { GameConstants } from "./constants/GameConstants";
 import { SpriteService } from "./services/SpriteService";
 import { TowerPlacementController } from "./game/TowerPlacementController";
 import { DomEventHelper } from "./helpers/DomEventHelper";
+import { SoundService } from "./services/SoundService";
+import { EconomyService } from "./services/EconomyService";
+import { UIManager } from "./game/ui/UIManager";
 
 export class App {
     public readonly app: Application;
@@ -16,6 +19,9 @@ export class App {
     private readonly sceneFactory: SceneFactory;
     private readonly animatedSpriteService: AnimatedSpriteService;
     private readonly spriteService: SpriteService;
+    private readonly soundService: SoundService;
+    private readonly economyService: EconomyService;
+    private readonly uiManager: UIManager;
     public gameContainer: ResponsiveContainer | null = null;
     private entityManager!: EntityManager; // how we can get rid of "!" ?
     private readonly domEventHelper: DomEventHelper;
@@ -26,11 +32,15 @@ export class App {
         this.sceneFactory = new SceneFactory(this.app.renderer);
         this.animatedSpriteService = new AnimatedSpriteService();
         this.spriteService = new SpriteService();
+        this.soundService = new SoundService();
+        this.economyService = new EconomyService(1500);
+        this.uiManager = new UIManager(this.sceneLayerManager.uiLayer, this.economyService);
         this.domEventHelper = new DomEventHelper();
+        this.soundService = new SoundService();
 
         this.setup().then(() => {
             this.runInitialEffects();
-        })
+        });
         this.initDevTools();
     }
 
@@ -40,20 +50,28 @@ export class App {
 
         const background = this.sceneFactory.createResponsiveContainer(textures.background, ResponsiveMode.cover);
 
-        this.gameContainer = this.sceneFactory.createResponsiveContainer(textures.gameMap, ResponsiveMode.contain);
+        this.gameContainer = this.sceneFactory.createResponsiveContainer(textures.gameMap, ResponsiveMode.contain, { top: 80, bottom: 80 });
         this.gameContainer.eventMode = "static";
         this.gameContainer.sortableChildren = true;
 
         this.sceneLayerManager.backgroundLayer.addChild(background);
         this.sceneLayerManager.mainLayer.addChild(this.gameContainer);
 
-        this.entityManager = new EntityManager(this.gameContainer, this.animatedSpriteService, this.spriteService);
+        this.uiManager.init(this.gameContainer);
+
+        this.entityManager = new EntityManager(
+            this.gameContainer,
+            this.animatedSpriteService,
+            this.spriteService,
+            this.soundService,
+        );
 
         new TowerPlacementController(
             this.gameContainer,
             this.entityManager,
             this.spriteService,
-            this.domEventHelper
+            this.domEventHelper,
+            this.soundService,
         );
     }
 

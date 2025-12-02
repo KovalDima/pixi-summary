@@ -1,5 +1,5 @@
 import { type IRenderer, type Texture, Sprite } from "pixi.js";
-import { ResponsiveContainer, ResponsiveMode } from "../view/ResponsiveContainer";
+import { ResponsiveContainer, ResponsiveMode, type TPaddings } from "../view/ResponsiveContainer";
 
 export class SceneFactory {
     private readonly renderer: IRenderer;
@@ -8,11 +8,12 @@ export class SceneFactory {
         this.renderer = renderer;
     }
 
-    public createResponsiveContainer(texture: Texture, mode: ResponsiveMode) {
+    public createResponsiveContainer(texture: Texture, mode: ResponsiveMode, paddings?: TPaddings) {
         const container = new ResponsiveContainer(this.renderer, {
             logicalWidth: texture.width,
             logicalHeight: texture.height,
-            mode
+            mode,
+            paddings,
         });
 
         container.addChild(new Sprite(texture));

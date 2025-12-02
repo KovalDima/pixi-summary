@@ -6,6 +6,7 @@ export class Config {
         White: 0xFFFFFF,
         Yellow: 0xFFFF00,
         Cyan: 0x00FFFF,
-        Magenta: 0xFF00FF
+        Magenta: 0xFF00FF,
+        Black: 0x000000,
     }
 }
