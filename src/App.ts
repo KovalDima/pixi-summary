@@ -1,8 +1,8 @@
 import { type Application } from "pixi.js";
-import { SceneLayerManager } from "./core/SceneLayerManager";
+import { SceneLayerManager } from "./core/scene/SceneLayerManager";
 import { AssetManager } from "./core/AssetManager";
 import { ResponsiveContainer, ResponsiveMode } from "./view/ResponsiveContainer";
-import { SceneFactory } from "./core/SceneFactory";
+import { SceneFactory } from "./core/scene/SceneFactory";
 import { AnimatedSpriteService} from "./services/AnimatedSpriteService";
 import { EntityManager } from "./game/EntityManager";
 import { GameConstants } from "./constants/GameConstants";
@@ -23,7 +23,7 @@ export class App {
     private readonly economyService: EconomyService;
     private readonly uiManager: UIManager;
     public gameContainer: ResponsiveContainer | null = null;
-    private entityManager!: EntityManager; // how we can get rid of "!" ?
+    public entityManager!: EntityManager; // how we can get rid of "!" ?
     private readonly domEventHelper: DomEventHelper;
 
     constructor(app: Application) {
@@ -42,6 +42,12 @@ export class App {
             this.runInitialEffects();
         });
         this.initDevTools();
+        const points: Record<string, number>[] = [];
+        this.app.stage.eventMode = "static";
+        this.app.stage.on("pointerdown", (e) => {
+            points.push({ x: e.x, y: e.y });
+            console.log(points);
+        });
     }
 
     private async setup() {
@@ -73,6 +79,12 @@ export class App {
             this.domEventHelper,
             this.soundService,
         );
+
+        this.app.ticker.add((delta) => {
+            if (this.entityManager) {
+                this.entityManager.update(delta);
+            }
+        });
     }
 
     private runInitialEffects() {

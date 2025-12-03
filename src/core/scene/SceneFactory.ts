@@ -1,5 +1,5 @@
 import { type IRenderer, type Texture, Sprite } from "pixi.js";
-import { ResponsiveContainer, ResponsiveMode, type TPaddings } from "../view/ResponsiveContainer";
+import { ResponsiveContainer, ResponsiveMode, type TPaddings } from "../../view/ResponsiveContainer";
 
 export class SceneFactory {
     private readonly renderer: IRenderer;

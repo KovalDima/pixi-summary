@@ -6,6 +6,9 @@ import { type SpriteService } from "../services/SpriteService";
 import { DepthCalculator } from "../utils/DepthCalculator";
 import { type TTowerConfig, TowerType } from "./towers/TowerTypes";
 import { type SoundService } from "../services/SoundService";
+import { PathfindingService } from "../core/pathfinding/PathfindingService";
+import { MapConfig } from "../configs/MapConfig";
+import { Enemy } from "./entities/Enemy";
 
 export type TFlameConfig = {
     position: IPointData,
@@ -14,13 +17,17 @@ export type TFlameConfig = {
     animationSpeed: number
 }
 
+// TODO: delete debug code
 export class EntityManager {
     private readonly gameContainer: Container;
     private readonly animatedSpriteService: AnimatedSpriteService;
     private readonly spriteService: SpriteService;
     private readonly soundService: SoundService;
+    private pathfindingService: PathfindingService;
 
     private towers: Sprite[] = [];
+    private enemies: Enemy[] = [];
+    public debugMonsters: Enemy[] = [];
 
     constructor(
         gameContainer: Container,
@@ -32,6 +39,31 @@ export class EntityManager {
         this.animatedSpriteService = animatedSpriteService;
         this.spriteService = spriteService;
         this.soundService = soundService;
+        this.pathfindingService = new PathfindingService(MapConfig.getNodes(), MapConfig.getEdges());
+    }
+
+    public debugSpawnAllPoints() {
+        this.debugMonsters.forEach(m => m.destroy());
+        this.debugMonsters = [];
+
+        const nodes = MapConfig.getNodes();
+
+        nodes.forEach((node) => {
+            const enemy = new Enemy(this.spriteService, [node], () => {});
+            this.enemies.push(enemy);
+            this.gameContainer.addChild(enemy);
+            this.debugMonsters.push(enemy);
+        });
+
+        this.gameContainer.sortChildren();
+    }
+
+    public updateDebugMonsterPos(index: number, x: number, y: number) {
+        if (this.debugMonsters[index]) {
+            this.debugMonsters[index].x = x;
+            this.debugMonsters[index].y = y;
+            this.debugMonsters[index].zIndex = y;
+        }
     }
 
     public addFlame(config: TFlameConfig) {
@@ -60,6 +92,33 @@ export class EntityManager {
         this.gameContainer.addChild(towerObject);
     }
 
+    public spawnEnemy() {
+        const startId = MapConfig.START_NODE_ID;
+        const endId = MapConfig.getFinishNodeId();
+
+        const path = this.pathfindingService.findPath(startId, endId);
+
+        if (!path || path.length === 0) {
+            console.error("Шлях для монстра не знайдено!");
+            return;
+        }
+
+        const enemy = new Enemy(this.spriteService, path, () => {
+            this.removeEnemy(enemy);
+        });
+
+        this.enemies.push(enemy);
+        this.gameContainer.addChild(enemy);
+    }
+
+    private removeEnemy(enemy: Enemy) {
+        const index = this.enemies.indexOf(enemy);
+        if (index !== -1) {
+            this.enemies.splice(index, 1);
+            enemy.destroy();
+        }
+    }
+
     private getTower(config: TTowerConfig) {
         let tower;
         switch (config.type) {
@@ -81,7 +140,10 @@ export class EntityManager {
         return tower;
     }
 
-    // TODO:
-    // public createEnemy() {}
-    // public update(delta: number) {}
+    public update(delta: number) {
+        for (let i = this.enemies.length - 1; i >= 0; i--) { // from end ?
+            this.enemies[i].update(delta);
+        }
+        this.gameContainer.sortChildren();
+    }
 }

@@ -17,4 +17,7 @@ export class AssetsConstants {
     public static readonly SOUND_FAIL_BUILD = "fail_build";
 
     public static readonly FONT_VCR_ALIAS = "VCR_OSD_MONO";
+
+    public static readonly SYMBOLS_ATLAS_ALIAS = "symbols";
+    public static readonly MONSTER_TEXTURE_ALIAS = "monster.png";
 }

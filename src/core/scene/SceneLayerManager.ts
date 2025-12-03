@@ -1,5 +1,5 @@
 import { Application, Container } from "pixi.js";
-import { SceneLayerConstants } from "../constants/SceneLayerConstants";
+import { SceneLayerConstants } from "../../constants/SceneLayerConstants";
 
 export class SceneLayerManager {
     public readonly backgroundLayer: Container;
