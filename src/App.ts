@@ -7,7 +7,7 @@ import { AnimatedSpriteService} from "./services/AnimatedSpriteService";
 import { EntityManager } from "./game/EntityManager";
 import { GameConstants } from "./constants/GameConstants";
 import { SpriteService } from "./services/SpriteService";
-import { TowerPlacementController } from "./game/TowerPlacementController";
+import { ObjectPlacementController } from "./game/ObjectPlacementController";
 import { DomEventHelper } from "./helpers/DomEventHelper";
 import { SoundService } from "./services/SoundService";
 import { EconomyService } from "./services/EconomyService";
@@ -23,6 +23,8 @@ export class App {
     private readonly economyService: EconomyService;
     private readonly uiManager: UIManager;
     public gameContainer: ResponsiveContainer | null = null;
+    // TODO:
+    //  make private again
     public entityManager!: EntityManager; // how we can get rid of "!" ?
     private readonly domEventHelper: DomEventHelper;
 
@@ -42,12 +44,6 @@ export class App {
             this.runInitialEffects();
         });
         this.initDevTools();
-        const points: Record<string, number>[] = [];
-        this.app.stage.eventMode = "static";
-        this.app.stage.on("pointerdown", (e) => {
-            points.push({ x: e.x, y: e.y });
-            console.log(points);
-        });
     }
 
     private async setup() {
@@ -72,7 +68,7 @@ export class App {
             this.soundService,
         );
 
-        new TowerPlacementController(
+        new ObjectPlacementController(
             this.gameContainer,
             this.entityManager,
             this.spriteService,
@@ -80,11 +76,7 @@ export class App {
             this.soundService,
         );
 
-        this.app.ticker.add((delta) => {
-            if (this.entityManager) {
-                this.entityManager.update(delta);
-            }
-        });
+        this.startGameLoop();
     }
 
     private runInitialEffects() {
@@ -95,6 +87,12 @@ export class App {
                 width: 60,
                 animationSpeed: 0.3
             });
+        });
+    }
+
+    private startGameLoop() {
+        this.app.ticker.add((delta) => {
+            this.entityManager.update(delta);
         });
     }
 

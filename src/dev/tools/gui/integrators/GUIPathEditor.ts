@@ -68,7 +68,6 @@ export class GUIPathEditor {
 
     private printJson() {
         const json = JSON.stringify(MapConfig.MAIN_PATH_POINTS, null, 4);
-        console.log("⬇️ COPY THIS TO MapConfig.ts ⬇️");
         console.log(json);
     }
 }

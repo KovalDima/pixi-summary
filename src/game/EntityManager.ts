@@ -27,6 +27,7 @@ export class EntityManager {
 
     private towers: Sprite[] = [];
     private enemies: Enemy[] = [];
+    private occupiedNodes: Set<string> = new Set();
     public debugMonsters: Enemy[] = [];
 
     constructor(
@@ -40,6 +41,32 @@ export class EntityManager {
         this.spriteService = spriteService;
         this.soundService = soundService;
         this.pathfindingService = new PathfindingService(MapConfig.getNodes(), MapConfig.getEdges());
+    }
+
+    public getOccupiedNodes() {
+        return this.occupiedNodes;
+    }
+
+    public addRoadblock(nodeId: string) {
+        const node = MapConfig.getNodes().find(node => node.id === nodeId);
+
+        if (!node) {
+            return;
+        }
+
+        const roadblock = this.spriteService.createSprite(AssetsConstants.ROADBLOCK_BOOSTER_ALIAS);
+        const scale = DepthCalculator.getTowerScale(node.position.y); // not towerScale!
+
+        roadblock.position.copyFrom(node.position);
+        roadblock.scale.set(scale);
+        roadblock.zIndex = node.position.y;
+
+        this.gameContainer.addChild(roadblock);
+        this.gameContainer.sortChildren();
+        this.occupiedNodes.add(nodeId);
+        this.pathfindingService.setNodeBlocked(nodeId, true);
+
+        this.soundService.play(AssetsConstants.SOUND_BUILD_PROCESS); // another sound here
     }
 
     public debugSpawnAllPoints() {
@@ -98,11 +125,6 @@ export class EntityManager {
 
         const path = this.pathfindingService.findPath(startId, endId);
 
-        if (!path || path.length === 0) {
-            console.error("Шлях для монстра не знайдено!");
-            return;
-        }
-
         const enemy = new Enemy(this.spriteService, path, () => {
             this.removeEnemy(enemy);
         });
@@ -141,9 +163,9 @@ export class EntityManager {
     }
 
     public update(delta: number) {
-        for (let i = this.enemies.length - 1; i >= 0; i--) { // from end ?
-            this.enemies[i].update(delta);
-        }
+        this.enemies.forEach((enemy) => {
+            enemy.update(delta);
+        })
         this.gameContainer.sortChildren();
     }
 }

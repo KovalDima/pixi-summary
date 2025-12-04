@@ -15,7 +15,7 @@ export class GameConstants {
     public static readonly TOWER_MIN_SCALE = 0.14;
     public static readonly TOWER_MAX_SCALE = 0.18;
 
-    public static readonly TOWER_BUTTON_SCALE = 0.15;
+    public static readonly UI_ELEMENT_SCALE = 0.15;
     public static readonly TOWER_BUTTON_POSITIONS: { type: TowerType, position: IPointData }[] = [
         {
             type: TowerType.REGULAR_TOWER,
@@ -26,6 +26,8 @@ export class GameConstants {
             position: { x: 160, y: 950 },
         }
     ];
+
+    public static readonly ROADBLOCK_BOOSTER_BUTTON_POSITION = { x: 900, y: 950 };
 
     public static readonly ISLAND_CENTER: IPointData = { x: 520, y: 460 };
     public static readonly ISLAND_RADIUS = 410;

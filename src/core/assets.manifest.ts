@@ -18,6 +18,7 @@ export const manifest = {
                 { alias: AssetsConstants.ARCHER_TOWER_ALIAS, src: "resources/towers/tower_2_4.png" },
                 { alias: AssetsConstants.ARCHER_TOWER_ANIM_ALIAS, src: "resources/spritesheets/tower_2_progress.json" },
                 { alias: AssetsConstants.SYMBOLS_ATLAS_ALIAS, src: "resources/spritesheets/symbols.json" },
+                { alias: AssetsConstants.ROADBLOCK_BOOSTER_ALIAS, src: "resources/boosters/roadblock_booster.png" },
             ]
         }
     ],

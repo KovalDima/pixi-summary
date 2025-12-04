@@ -1,3 +1,6 @@
+// TODO:
+//  move some assets to spritesheet
+//  remove from SYMBOLS_ATLAS_ALIAS unnecessary textures
 export class AssetsConstants {
     public static readonly CORE_BUNDLE = "core";
     public static readonly GAME_BUNDLE = "game";
@@ -10,6 +13,8 @@ export class AssetsConstants {
     public static readonly REGULAR_TOWER_ALIAS = "tower1";
     public static readonly ARCHER_TOWER_ALIAS = "tower_2_4";
     public static readonly ARCHER_TOWER_ANIM_ALIAS = "tower_2_progress";
+
+    public static readonly ROADBLOCK_BOOSTER_ALIAS = "roadblock_booster";
 
     public static readonly SOUND_CLICK = "click";
     public static readonly SOUND_BUILD_PROCESS = "building_process";
