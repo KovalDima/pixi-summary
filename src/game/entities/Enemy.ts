@@ -18,7 +18,6 @@ export class Enemy extends Container {
         this.reachedFinishCallback = onReachedFinish;
 
         this.sprite = spriteService.createSprite(AssetsConstants.MONSTER_TEXTURE_ALIAS);
-        // this.sprite.anchor.set(0.5, 0.9);
         this.addChild(this.sprite);
 
         if (this.path.length > 0) {

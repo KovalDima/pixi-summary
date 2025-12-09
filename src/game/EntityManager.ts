@@ -63,7 +63,6 @@ export class EntityManager {
 
         roadblock.position.copyFrom(node.position);
         roadblock.scale.set(scale);
-        // roadblock.anchor.set(0.1, 0.5);
         roadblock.zIndex = node.position.y;
 
         this.gameContainer.addChild(roadblock);
@@ -73,7 +72,7 @@ export class EntityManager {
 
         // TODO:
         //  another sound here
-        this.soundService.play(AssetsConstants.SOUND_BUILD_PROCESS);
+        this.soundService.play(AssetsConstants.SOUND_REGULAR_TOWER_BUILD);
     }
 
     public debugSpawnAllPoints() {

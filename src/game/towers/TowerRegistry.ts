@@ -26,7 +26,7 @@ export class TowerRegistry {
         ]
     ]);
 
-    public static getTowerData(type: TowerType) {
+    public static getData(type: TowerType) {
         return this.towerConfigs.get(type);
     }
 }
