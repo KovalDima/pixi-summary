@@ -41,13 +41,11 @@ export class PathfindingService {
     }
 
     // TODO:
-    //  розбити на менші приватні методи?
+    //  розбити на менші функції
     public findPath(startId: string, endId: string): TPathNode[] {
         const distances: Map<string, number> = new Map();
         const previous: Map<string, string | null> = new Map();
         const unvisited: Set<string> = new Set();
-
-        distances.set(startId, 0);
 
         this.nodes.forEach((_, id) => {
             distances.set(id, Infinity);
@@ -55,12 +53,14 @@ export class PathfindingService {
             unvisited.add(id);
         });
 
+        distances.set(startId, 0);
+
         while (unvisited.size > 0) {
             let currentNodeId: string | null = null;
             let minDistance = Infinity;
 
             unvisited.forEach(id => {
-                const dist = distances.get(id)!; // remove !
+                const dist = distances.get(id) ?? Infinity;
                 if (dist < minDistance) {
                     minDistance = dist;
                     currentNodeId = id;
@@ -80,9 +80,11 @@ export class PathfindingService {
                     continue;
                 }
 
-                const newDistance = distances.get(currentNodeId)! + neighbor.weight; // remove !
+                const currentDistance = distances.get(currentNodeId) ?? Infinity;
+                const newDistance = currentDistance + neighbor.weight;
+                const neighborDistance = distances.get(neighbor.node) ?? Infinity;
 
-                if (newDistance < distances.get(neighbor.node)!) { // remove !
+                if (newDistance < neighborDistance) {
                     distances.set(neighbor.node, newDistance);
                     previous.set(neighbor.node, currentNodeId);
                 }
@@ -101,7 +103,6 @@ export class PathfindingService {
             if (node) path.unshift(node);
             current = previous.get(current) || null;
         }
-
         return path;
     }
 }

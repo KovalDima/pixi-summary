@@ -9,39 +9,112 @@ export type TDetourConfig = {
 };
 
 export class MapConfig {
-    // TODO: make private again
+    // TODO: make private again (after debug)
     public static readonly MAIN_PATH_POINTS: IPointData[] = [
-        {x: 848, y: 761}, {x: 761, y: 689}, {x: 727, y: 593},
-        {x: 687, y: 515}, {x: 614, y: 453}, {x: 455, y: 368},
-        {x: 473, y: 319}, {x: 551, y: 306}, {x: 631, y: 284},
-        {x: 645, y: 246}, {x: 609, y: 203}, {x: 529, y: 181},
-        {x: 453, y: 192}, {x: 397, y: 232}, {x: 339, y: 335},
-        {x: 348, y: 402}, {x: 411, y: 473}, {x: 404, y: 504},
-        {x: 373, y: 522}, {x: 315, y: 507}, {x: 246, y: 480},
-        {x: 201, y: 504}, {x: 190, y: 551}, {x: 212, y: 591},
-        {x: 306, y: 634}, {x: 384, y: 634}, {x: 455, y: 591},
-        {x: 482, y: 544}, {x: 515, y: 480}, {x: 716, y: 342},
-        {x: 776, y: 346}, {x: 832, y: 386}, {x: 850, y: 435},
-        {x: 836, y: 491}, {x: 792, y: 527}, {x: 620, y: 585},
-        {x: 591, y: 634}, {x: 576, y: 707}, {x: 542, y: 754},
-        {x: 466, y: 801}, {x: 368, y: 803}, {x: 306, y: 772},
-        {x: 226, y: 692}, {x: 232, y: 634},
+        {"x": 850, "y": 739},
+        {"x": 778, "y": 688},
+        {"x": 748, "y": 652},
+        {"x": 734, "y": 593},
+        {"x": 700, "y": 515},
+        {"x": 670, "y": 477},
+        {"x": 621, "y": 442},
+        {"x": 462, "y": 368},
+        {"x": 462, "y": 314},
+        {"x": 556, "y": 289},
+        {"x": 625, "y": 274},
+        {"x": 642, "y": 258},
+        {"x": 647, "y": 241},
+        {"x": 609, "y": 188},
+        {"x": 529, "y": 166},
+        {"x": 453, "y": 177},
+        {"x": 384, "y": 232},
+        {"x": 360, "y": 260},
+        {"x": 335, "y": 335},
+        {"x": 360, "y": 402},
+        {"x": 389, "y": 427},
+        {"x": 416, "y": 473},
+        {"x": 397, "y": 499},
+        {"x": 362, "y": 507},
+        {"x": 314, "y": 491},
+        {"x": 255, "y": 467},
+        {"x": 204, "y": 486},
+        {"x": 188, "y": 532},
+        {"x": 209, "y": 572},
+        {"x": 244, "y": 593},
+        {"x": 306, "y": 615},
+        {"x": 386, "y": 618},
+        {"x": 448, "y": 585},
+        {"x": 483, "y": 529},
+        {"x": 510, "y": 470},
+        {"x": 695, "y": 333},
+        {"x": 763, "y": 327},
+        {"x": 806, "y": 346},
+        {"x": 841, "y": 386},
+        {"x": 849, "y": 435},
+        {"x": 835, "y": 481},
+        {"x": 784, "y": 515},
+        {"x": 623, "y": 564},
+        {"x": 591, "y": 618},
+        {"x": 585, "y": 663},
+        {"x": 566, "y": 714},
+        {"x": 526, "y": 754},
+        {"x": 462, "y": 787},
+        {"x": 368, "y": 787},
+        {"x": 300, "y": 749},
+        {"x": 239, "y": 692},
+        {"x": 222, "y": 634}
     ];
 
+    // 2+, 5+, 11+, 17+, 20, 29, 37, 44
     private static readonly OBSTACLES_DATA: TDetourConfig[] = [
         {
-            obstacleIndex: 1,
+            obstacleIndex: 2,
             enterIndex: 1,
-            exitIndex: 3,
-            detourPoints: [{ x: 700, y: 680 }, { x: 690, y: 595 }]
-        }, // done
+            exitIndex: 4,
+            detourPoints: [{x: 708, y: 680}, {x: 690, y: 595}]
+        },
         {
-            obstacleIndex: 3,
-            enterIndex: 3,
-            exitIndex: 5,
-            detourPoints: [{ x: 300, y: 280 }, { x: 280, y: 380 }, { x: 280, y: 450 }]
-        }, // not done
-        // others here ...
+            obstacleIndex: 5,
+            enterIndex: 4,
+            exitIndex: 7,
+            detourPoints: [{x: 708, y: 460}, {x: 655, y: 420}, {x: 560, y: 373}]
+        },
+        {
+            obstacleIndex: 11,
+            enterIndex: 10,
+            exitIndex: 15,
+            detourPoints: [{x: 522, y: 250}, {x: 496, y: 200}]
+        },
+        {
+            obstacleIndex: 17,
+            enterIndex: 16,
+            exitIndex: 19,
+            detourPoints: [{x: 313, y: 255}, {x: 300, y: 366}]
+        },
+        {
+            obstacleIndex: 20,
+            enterIndex: 19,
+            exitIndex: 25,
+            detourPoints: [{x: 290, y: 451}]
+        },
+        {
+            obstacleIndex: 29,
+            enterIndex: 28,
+            exitIndex: 32,
+            detourPoints: [{x: 279, y: 557}, {x: 341, y: 583}, {x: 410, y: 582}]
+        },
+        {
+            obstacleIndex: 37,
+            enterIndex: 36,
+            exitIndex: 41,
+            detourPoints: [{x: 800, y: 420}, {x: 800, y: 470}]
+        },
+        {
+            obstacleIndex: 44,
+            enterIndex: 43,
+            exitIndex: 48,
+            detourPoints: [{x: 500, y: 720}, {x: 410, y: 765}]
+        },
     ];
 
     public static readonly START_NODE_ID = "main_node_0";
@@ -74,12 +147,14 @@ export class MapConfig {
     public static getEdges(): TPathEdge[] {
         const edges: TPathEdge[] = [];
         const totalPoints = this.MAIN_PATH_POINTS.length;
+        const mainPathEdgeWeight = 1;
+        const detourEdgeWeight = 20;
 
         for (let i = 0; i < totalPoints - 1; i++) {
             edges.push({
                 from: `main_node_${i}`,
                 to: `main_node_${i + 1}`,
-                weight: 1
+                weight: mainPathEdgeWeight
             });
         }
 
@@ -87,25 +162,24 @@ export class MapConfig {
             edges.push({
                 from: `main_node_${obstacle.enterIndex}`,
                 to: `detour_node_${obstacle.obstacleIndex}_0`,
-                weight: 1
+                weight: detourEdgeWeight
             });
 
             for (let i = 0; i < obstacle.detourPoints.length - 1; i++) {
                 edges.push({
                     from: `detour_node_${obstacle.obstacleIndex}_${i}`,
                     to: `detour_node_${obstacle.obstacleIndex}_${i + 1}`,
-                    weight: 1 // weight more?
+                    weight: detourEdgeWeight
                 });
             }
 
             edges.push({
                 from: `detour_node_${obstacle.obstacleIndex}_${obstacle.detourPoints.length - 1}`,
                 to: `main_node_${obstacle.exitIndex}`,
-                weight: 1
+                weight: detourEdgeWeight
             });
         });
 
-        console.log(edges);
         return edges;
     }
 

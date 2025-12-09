@@ -1,5 +1,5 @@
 import { Sprite, Container } from "pixi.js";
-import type { TPathNode } from "../../core/pathfinding/PathfindingTypes";
+import { PathNodeType, type TPathNode } from "../../core/pathfinding/PathfindingTypes";
 import { AssetsConstants } from "../../constants/AssetsConstants";
 import { SpriteService } from "../../services/SpriteService";
 import { DepthCalculator } from "../../utils/DepthCalculator";
@@ -7,8 +7,9 @@ import { DepthCalculator } from "../../utils/DepthCalculator";
 export class Enemy extends Container {
     private readonly sprite: Sprite;
     private readonly path: TPathNode[];
-    private currentTargetIndex: number = 0; // ??
-    private speed: number = 3;
+    private currentTargetIndex: number = 0;
+    private readonly baseSpeed: number = 2;
+    private currentSpeed: number = this.baseSpeed;
     private readonly reachedFinishCallback: () => void;
 
     constructor(spriteService: SpriteService, path: TPathNode[], onReachedFinish: () => void) {
@@ -17,7 +18,7 @@ export class Enemy extends Container {
         this.reachedFinishCallback = onReachedFinish;
 
         this.sprite = spriteService.createSprite(AssetsConstants.MONSTER_TEXTURE_ALIAS);
-        this.sprite.anchor.set(0.5, 0.9);
+        // this.sprite.anchor.set(0.5, 0.9);
         this.addChild(this.sprite);
 
         if (this.path.length > 0) {
@@ -35,11 +36,18 @@ export class Enemy extends Container {
         }
 
         const targetNode = this.path[this.currentTargetIndex];
+
+        if (targetNode.type === PathNodeType.DETOUR) {
+            this.currentSpeed = this.baseSpeed * 0.4;
+        } else {
+            this.currentSpeed = this.baseSpeed;
+        }
+
         const targetPosition = targetNode.position;
         const distanceX = targetPosition.x - this.x;
         const distanceY = targetPosition.y - this.y;
         const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
-        const normalizedSpeed = this.speed * delta;
+        const normalizedSpeed = this.currentSpeed * delta;
 
         if (distance < normalizedSpeed) {
             this.x = targetPosition.x;
@@ -60,7 +68,7 @@ export class Enemy extends Container {
 
     private updateScaleAndDepth() {
         // TODO:
-        //  towerScale rename to "somethingScale"
+        //  getTowerScale rename to "somethingScale"
         const scale = DepthCalculator.getTowerScale(this.y);
         this.scale.set(scale);
         this.zIndex = this.y;

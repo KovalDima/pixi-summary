@@ -25,6 +25,8 @@ export class EntityManager {
     private readonly soundService: SoundService;
     private pathfindingService: PathfindingService;
 
+    // TODO:
+    //  do I need this towers?
     private towers: Sprite[] = [];
     private enemies: Enemy[] = [];
     private occupiedNodes: Set<string> = new Set();
@@ -55,10 +57,13 @@ export class EntityManager {
         }
 
         const roadblock = this.spriteService.createSprite(AssetsConstants.ROADBLOCK_BOOSTER_ALIAS);
-        const scale = DepthCalculator.getTowerScale(node.position.y); // not towerScale!
+        // TODO:
+        //  not towerScale
+        const scale = DepthCalculator.getTowerScale(node.position.y);
 
         roadblock.position.copyFrom(node.position);
         roadblock.scale.set(scale);
+        // roadblock.anchor.set(0.1, 0.5);
         roadblock.zIndex = node.position.y;
 
         this.gameContainer.addChild(roadblock);
@@ -66,7 +71,9 @@ export class EntityManager {
         this.occupiedNodes.add(nodeId);
         this.pathfindingService.setNodeBlocked(nodeId, true);
 
-        this.soundService.play(AssetsConstants.SOUND_BUILD_PROCESS); // another sound here
+        // TODO:
+        //  another sound here
+        this.soundService.play(AssetsConstants.SOUND_BUILD_PROCESS);
     }
 
     public debugSpawnAllPoints() {
@@ -124,7 +131,6 @@ export class EntityManager {
         const endId = MapConfig.getFinishNodeId();
 
         const path = this.pathfindingService.findPath(startId, endId);
-
         const enemy = new Enemy(this.spriteService, path, () => {
             this.removeEnemy(enemy);
         });
