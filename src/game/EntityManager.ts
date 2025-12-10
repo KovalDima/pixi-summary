@@ -72,7 +72,7 @@ export class EntityManager {
 
         // TODO:
         //  another sound here
-        this.soundService.play(AssetsConstants.SOUND_REGULAR_TOWER_BUILD);
+        this.soundService.play(AssetsConstants.SOUND_BUILD_PROCESS);
     }
 
     public debugSpawnAllPoints() {

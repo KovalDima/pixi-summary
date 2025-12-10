@@ -7,7 +7,7 @@ import { AnimatedSpriteService} from "./services/AnimatedSpriteService";
 import { EntityManager } from "./game/EntityManager";
 import { GameConstants } from "./constants/GameConstants";
 import { SpriteService } from "./services/SpriteService";
-import { ObjectPlacementController } from "./game/placement/ObjectPlacementController";
+import { ObjectPlacementController } from "./game/ObjectPlacementController";
 import { DomEventHelper } from "./helpers/DomEventHelper";
 import { SoundService } from "./services/SoundService";
 import { EconomyService } from "./services/EconomyService";
@@ -21,11 +21,11 @@ export class App {
     private readonly spriteService: SpriteService;
     private readonly soundService: SoundService;
     private readonly economyService: EconomyService;
+    private readonly uiManager: UIManager;
     public gameContainer: ResponsiveContainer | null = null;
     // TODO:
     //  make private again
-    public entityManager!: EntityManager;
-    private objectPlacementController!: ObjectPlacementController;
+    public entityManager!: EntityManager; // how we can get rid of "!" ?
     private readonly domEventHelper: DomEventHelper;
 
     constructor(app: Application) {
@@ -36,6 +36,7 @@ export class App {
         this.spriteService = new SpriteService();
         this.soundService = new SoundService();
         this.economyService = new EconomyService(1500);
+        this.uiManager = new UIManager(this.sceneLayerManager.uiLayer, this.economyService);
         this.domEventHelper = new DomEventHelper();
         this.soundService = new SoundService();
 
@@ -58,6 +59,8 @@ export class App {
         this.sceneLayerManager.backgroundLayer.addChild(background);
         this.sceneLayerManager.mainLayer.addChild(this.gameContainer);
 
+        this.uiManager.init(this.gameContainer);
+
         this.entityManager = new EntityManager(
             this.gameContainer,
             this.animatedSpriteService,
@@ -65,21 +68,13 @@ export class App {
             this.soundService,
         );
 
-        this.objectPlacementController = new ObjectPlacementController(
+        new ObjectPlacementController(
             this.gameContainer,
             this.entityManager,
             this.spriteService,
             this.domEventHelper,
             this.soundService,
         );
-
-        new UIManager(
-            this.sceneLayerManager.uiLayer,
-            this.economyService,
-            this.objectPlacementController,
-            this.spriteService,
-            this.soundService
-        ).init(this.gameContainer);
 
         this.startGameLoop();
     }

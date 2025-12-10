@@ -1,6 +1,5 @@
 import { type IPointData } from "pixi.js";
 import { TowerType } from "../game/towers/TowerTypes";
-import { BoosterType } from "../game/boosters/BoosterTypes";
 
 export class GameConstants {
     public static readonly FLAME_POSITIONS: IPointData[] = [
@@ -28,12 +27,7 @@ export class GameConstants {
         }
     ];
 
-    public static readonly BOOSTER_BUTTON_POSITIONS: { type: BoosterType, position: IPointData }[] = [
-        {
-            type: BoosterType.ROADBLOCK,
-            position: { x: 900, y: 950 },
-        },
-    ];
+    public static readonly ROADBLOCK_BOOSTER_BUTTON_POSITION = { x: 900, y: 950 };
 
     public static readonly ISLAND_CENTER: IPointData = { x: 520, y: 460 };
     public static readonly ISLAND_RADIUS = 410;
