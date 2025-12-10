@@ -7,11 +7,14 @@ import { AnimatedSpriteService} from "./services/AnimatedSpriteService";
 import { EntityManager } from "./game/EntityManager";
 import { GameConstants } from "./constants/GameConstants";
 import { SpriteService } from "./services/SpriteService";
-import { ObjectPlacementController } from "./game/ObjectPlacementController";
+import { ObjectPlacementController } from "./game/placement/ObjectPlacementController";
 import { DomEventHelper } from "./helpers/DomEventHelper";
 import { SoundService } from "./services/SoundService";
 import { EconomyService } from "./services/EconomyService";
 import { UIManager } from "./game/ui/UIManager";
+import { TowerManager } from "./game/towers/TowerManager";
+import { BoosterManager } from "./game/boosters/BoosterManager";
+import { HighlightService } from "./services/HighlightService";
 
 export class App {
     public readonly app: Application;
@@ -21,11 +24,11 @@ export class App {
     private readonly spriteService: SpriteService;
     private readonly soundService: SoundService;
     private readonly economyService: EconomyService;
-    private readonly uiManager: UIManager;
     public gameContainer: ResponsiveContainer | null = null;
     // TODO:
     //  make private again
-    public entityManager!: EntityManager; // how we can get rid of "!" ?
+    public entityManager!: EntityManager;
+    private objectPlacementController!: ObjectPlacementController;
     private readonly domEventHelper: DomEventHelper;
 
     constructor(app: Application) {
@@ -36,7 +39,6 @@ export class App {
         this.spriteService = new SpriteService();
         this.soundService = new SoundService();
         this.economyService = new EconomyService(1500);
-        this.uiManager = new UIManager(this.sceneLayerManager.uiLayer, this.economyService);
         this.domEventHelper = new DomEventHelper();
         this.soundService = new SoundService();
 
@@ -59,22 +61,47 @@ export class App {
         this.sceneLayerManager.backgroundLayer.addChild(background);
         this.sceneLayerManager.mainLayer.addChild(this.gameContainer);
 
-        this.uiManager.init(this.gameContainer);
+        const highlightService = new HighlightService(this.gameContainer);
 
         this.entityManager = new EntityManager(
             this.gameContainer,
             this.animatedSpriteService,
-            this.spriteService,
-            this.soundService,
+            this.spriteService
         );
 
-        new ObjectPlacementController(
+        const towerManager = new TowerManager(
+            this.gameContainer,
+            this.spriteService,
+            this.animatedSpriteService,
+            this.soundService,
+            highlightService
+        );
+
+        const boosterManager = new BoosterManager(
+            this.gameContainer,
+            this.spriteService,
+            this.soundService,
+            this.entityManager,
+            highlightService
+        );
+
+        this.objectPlacementController = new ObjectPlacementController(
             this.gameContainer,
             this.entityManager,
+            towerManager,
+            boosterManager,
             this.spriteService,
             this.domEventHelper,
             this.soundService,
         );
+
+        new UIManager(
+            this.sceneLayerManager.uiLayer,
+            this.economyService,
+            this.objectPlacementController,
+            this.spriteService,
+            this.soundService
+        ).init(this.gameContainer);
 
         this.startGameLoop();
     }

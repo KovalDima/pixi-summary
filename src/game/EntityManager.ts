@@ -1,11 +1,8 @@
-import { type Container, type IPointData, Sprite } from "pixi.js";
+import { type Container, type IPointData } from "pixi.js";
 import { AnimatedSpriteService } from "../services/AnimatedSpriteService";
 import { AssetsConstants } from "../constants/AssetsConstants";
 import { AnimationConstants } from "../constants/AnimationConstants";
 import { type SpriteService } from "../services/SpriteService";
-import { DepthCalculator } from "../utils/DepthCalculator";
-import { type TTowerConfig, TowerType } from "./towers/TowerTypes";
-import { type SoundService } from "../services/SoundService";
 import { PathfindingService } from "../core/pathfinding/PathfindingService";
 import { MapConfig } from "../configs/MapConfig";
 import { Enemy } from "./entities/Enemy";
@@ -22,12 +19,7 @@ export class EntityManager {
     private readonly gameContainer: Container;
     private readonly animatedSpriteService: AnimatedSpriteService;
     private readonly spriteService: SpriteService;
-    private readonly soundService: SoundService;
     private pathfindingService: PathfindingService;
-
-    // TODO:
-    //  do I need this towers?
-    private towers: Sprite[] = [];
     private enemies: Enemy[] = [];
     private occupiedNodes: Set<string> = new Set();
     public debugMonsters: Enemy[] = [];
@@ -35,44 +27,21 @@ export class EntityManager {
     constructor(
         gameContainer: Container,
         animatedSpriteService: AnimatedSpriteService,
-        spriteService: SpriteService,
-        soundService: SoundService
+        spriteService: SpriteService
     ) {
         this.gameContainer = gameContainer;
         this.animatedSpriteService = animatedSpriteService;
         this.spriteService = spriteService;
-        this.soundService = soundService;
         this.pathfindingService = new PathfindingService(MapConfig.getNodes(), MapConfig.getEdges());
+    }
+
+    public registerObstacle(nodeId: string) {
+        this.occupiedNodes.add(nodeId);
+        this.pathfindingService.setNodeBlocked(nodeId, true);
     }
 
     public getOccupiedNodes() {
         return this.occupiedNodes;
-    }
-
-    public addRoadblock(nodeId: string) {
-        const node = MapConfig.getNodes().find(node => node.id === nodeId);
-
-        if (!node) {
-            return;
-        }
-
-        const roadblock = this.spriteService.createSprite(AssetsConstants.ROADBLOCK_BOOSTER_ALIAS);
-        // TODO:
-        //  not towerScale
-        const scale = DepthCalculator.getTowerScale(node.position.y);
-
-        roadblock.position.copyFrom(node.position);
-        roadblock.scale.set(scale);
-        roadblock.zIndex = node.position.y;
-
-        this.gameContainer.addChild(roadblock);
-        this.gameContainer.sortChildren();
-        this.occupiedNodes.add(nodeId);
-        this.pathfindingService.setNodeBlocked(nodeId, true);
-
-        // TODO:
-        //  another sound here
-        this.soundService.play(AssetsConstants.SOUND_BUILD_PROCESS);
     }
 
     public debugSpawnAllPoints() {
@@ -112,19 +81,6 @@ export class EntityManager {
         this.gameContainer.addChild(flameAnim);
     }
 
-    public addTower(config: TTowerConfig, position: IPointData) {
-        const towerObject = this.getTower(config);
-        const towerScale = DepthCalculator.getTowerScale(position.y);
-        const towerZIndex = position.y;
-
-        towerObject.position.set(position.x, position.y);
-        towerObject.scale.set(towerScale);
-        towerObject.zIndex = towerZIndex;
-
-        this.towers.push(towerObject);
-        this.gameContainer.addChild(towerObject);
-    }
-
     public spawnEnemy() {
         const startId = MapConfig.START_NODE_ID;
         const endId = MapConfig.getFinishNodeId();
@@ -144,27 +100,6 @@ export class EntityManager {
             this.enemies.splice(index, 1);
             enemy.destroy();
         }
-    }
-
-    private getTower(config: TTowerConfig) {
-        let tower;
-        switch (config.type) {
-            case TowerType.REGULAR_TOWER:
-                tower = this.spriteService.createSprite(config.assetAlias);
-                this.soundService.play(AssetsConstants.SOUND_REGULAR_TOWER_BUILD);
-                break;
-
-            case TowerType.ARCHER_TOWER:
-                if (!config.animationName) {
-                    throw new Error(`Missing animationName for tower config: ${config.type}`)
-                }
-                tower = this.animatedSpriteService.createAnimation(config.assetAlias, config.animationName);
-                tower.loop = false;
-                tower.animationSpeed = 0.03;
-                this.soundService.play(AssetsConstants.SOUND_BUILD_PROCESS);
-                break;
-        }
-        return tower;
     }
 
     public update(delta: number) {
