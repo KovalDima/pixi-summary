@@ -1,4 +1,4 @@
-import { Sprite, Container } from "pixi.js";
+import { Sprite, Container, type IPointData } from "pixi.js";
 import { PathNodeType, type TPathNode } from "../../core/pathfinding/PathfindingTypes";
 import { AssetsConstants } from "../../constants/AssetsConstants";
 import { SpriteService } from "../../services/SpriteService";
@@ -6,8 +6,10 @@ import { DepthCalculator } from "../../utils/DepthCalculator";
 
 export class Enemy extends Container {
     private readonly sprite: Sprite;
-    private readonly path: TPathNode[];
+    private path: TPathNode[];
     private currentTargetIndex: number = 0;
+    private currentTargetPoint: IPointData | null = null;
+    private readonly randomOffsetRange = 15;
     private readonly baseSpeed: number = 2;
     private currentSpeed: number = this.baseSpeed;
     private readonly reachedFinishCallback: () => void;
@@ -23,14 +25,27 @@ export class Enemy extends Container {
         if (this.path.length > 0) {
             this.position.copyFrom(this.path[0].position);
             this.currentTargetIndex = 1;
+            this.setNextTargetPoint();
         }
 
         this.updateScaleAndDepth();
     }
 
+    public getCurrentTargetNodeId() {
+        if (this.path && this.currentTargetIndex < this.path.length) {
+            return this.path[this.currentTargetIndex].id;
+        }
+        return null;
+    }
+
+    public updatePath(newPath: TPathNode[]) {
+        this.path = newPath;
+        this.currentTargetIndex = 0;
+        this.setNextTargetPoint();
+    }
+
     public update(delta: number) {
-        // TODO: only for debug?
-        if (this.currentTargetIndex >= this.path.length) {
+        if (!this.currentTargetPoint) {
             return;
         }
 
@@ -42,7 +57,7 @@ export class Enemy extends Container {
             this.currentSpeed = this.baseSpeed;
         }
 
-        const targetPosition = targetNode.position;
+        const targetPosition = this.currentTargetPoint;
         const distanceX = targetPosition.x - this.x;
         const distanceY = targetPosition.y - this.y;
         const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
@@ -57,12 +72,24 @@ export class Enemy extends Container {
                 this.reachedFinishCallback();
                 return;
             }
+
+            this.setNextTargetPoint();
         } else {
             this.x += (distanceX / distance) * normalizedSpeed;
             this.y += (distanceY / distance) * normalizedSpeed;
         }
 
         this.updateScaleAndDepth();
+    }
+
+    private setNextTargetPoint() {
+        const node = this.path[this.currentTargetIndex];
+        const randomOffset = (Math.random() - 0.5) * 2 * this.randomOffsetRange;
+
+        this.currentTargetPoint = {
+            x: node.position.x + randomOffset,
+            y: node.position.y + randomOffset
+        };
     }
 
     private updateScaleAndDepth() {

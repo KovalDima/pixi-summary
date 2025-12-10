@@ -38,6 +38,7 @@ export class EntityManager {
     public registerObstacle(nodeId: string) {
         this.occupiedNodes.add(nodeId);
         this.pathfindingService.setNodeBlocked(nodeId, true);
+        this.recalculatePathsForEnemies();
     }
 
     public getOccupiedNodes() {
@@ -94,18 +95,31 @@ export class EntityManager {
         this.gameContainer.addChild(enemy);
     }
 
+    public update(delta: number) {
+        this.enemies.forEach((enemy) => {
+            enemy.update(delta);
+        })
+        this.gameContainer.sortChildren();
+    }
+
+    private recalculatePathsForEnemies() {
+        const endId = MapConfig.getFinishNodeId();
+
+        this.enemies.forEach((enemy) => {
+            const nextNodeId = enemy.getCurrentTargetNodeId();
+
+            if (nextNodeId) {
+                const newPath = this.pathfindingService.findPath(nextNodeId, endId);
+                enemy.updatePath(newPath);
+            }
+        });
+    }
+
     private removeEnemy(enemy: Enemy) {
         const index = this.enemies.indexOf(enemy);
         if (index !== -1) {
             this.enemies.splice(index, 1);
             enemy.destroy();
         }
-    }
-
-    public update(delta: number) {
-        this.enemies.forEach((enemy) => {
-            enemy.update(delta);
-        })
-        this.gameContainer.sortChildren();
     }
 }
