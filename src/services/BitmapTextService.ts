@@ -10,11 +10,7 @@ export type TTextOptions = {
 export class BitmapTextService {
     private static initialized = false;
 
-    constructor() {
-        this.init();
-    }
-
-    private init() {
+    public init() {
         if (BitmapTextService.initialized) {
             return;
         }

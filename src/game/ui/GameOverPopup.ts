@@ -17,7 +17,7 @@ export class GameOverPopup extends Container {
         background.endFill();
         this.addChild(background);
 
-        const text = bitmapTextService.createText("Don't give up!", {fontSize: 100, tint: Config.colors.Red});
+        const text = bitmapTextService.createText("GAME OVER", {fontSize: 100, tint: Config.colors.Red});
 
         text.anchor.set(0.5);
         text.position.set(screenWidth / 2, screenHeight / 2);

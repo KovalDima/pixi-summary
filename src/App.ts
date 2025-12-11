@@ -61,6 +61,7 @@ export class App {
     private async setup() {
         const textures = await AssetManager.loadCoreAssets();
         await AssetManager.loadGameAssets();
+        this.bitmapTextService.init();
 
         const background = this.sceneFactory.createResponsiveContainer(textures.background, ResponsiveMode.cover);
 
