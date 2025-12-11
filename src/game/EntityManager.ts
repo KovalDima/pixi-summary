@@ -25,17 +25,20 @@ export class EntityManager {
     private enemies: Enemy[] = [];
     private occupiedNodes: Set<string> = new Set();
     public debugMonsters: Enemy[] = [];
+    private readonly onEnemyReachedFinish: (damage: number) => void;
 
     constructor(
         gameContainer: Container,
         animatedSpriteService: AnimatedSpriteService,
         spriteService: SpriteService,
-        economyService: EconomyService
+        economyService: EconomyService,
+        onEnemyReachedFinish: (damage: number) => void
     ) {
         this.gameContainer = gameContainer;
         this.animatedSpriteService = animatedSpriteService;
         this.spriteService = spriteService;
         this.economyService = economyService;
+        this.onEnemyReachedFinish = onEnemyReachedFinish;
         this.pathfindingService = new PathfindingService(MapConfig.getNodes(), MapConfig.getEdges());
     }
 
@@ -98,7 +101,10 @@ export class EntityManager {
         const enemy = new Enemy(
             this.spriteService,
             path,
-            () => this.removeEnemy(enemy),
+            () => {
+                this.onEnemyReachedFinish(enemy.damageToPlayer);
+                this.removeEnemy(enemy);
+            },
             () => {
                 this.economyService.addMoney(enemy.reward);
                 this.removeEnemy(enemy);

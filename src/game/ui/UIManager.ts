@@ -1,6 +1,5 @@
-import { Container, BitmapText, BitmapFont, Text, TextStyle, type IPointData } from "pixi.js";
+import { Container, BitmapText, Text, TextStyle, type IPointData } from "pixi.js";
 import { GameConstants } from "../../constants/GameConstants";
-import { FontConstants } from "../../constants/FontConstants";
 import { FontStyles } from "../../constants/FontStyles";
 import { TowerRegistry } from "../towers/TowerRegistry";
 import type { EconomyService } from "../../services/EconomyService";
@@ -9,6 +8,7 @@ import { ObjectPlacementController, PlaceableItemType } from "../placement/Objec
 import { SpriteService } from "../../services/SpriteService";
 import type { SoundService } from "../../services/SoundService";
 import { BoosterRegistry } from "../boosters/BoosterRegistry";
+import type { BitmapTextService } from "../../services/BitmapTextService";
 
 export class UIManager {
     private readonly uiLayer: Container;
@@ -17,6 +17,7 @@ export class UIManager {
     private placementController: ObjectPlacementController;
     private spriteService: SpriteService;
     private soundService: SoundService;
+    private bitmapTextService: BitmapTextService;
 
     constructor(
         uiLayer: Container,
@@ -24,16 +25,17 @@ export class UIManager {
         placementController: ObjectPlacementController,
         spriteService: SpriteService,
         soundService: SoundService,
+        bitmapTextService: BitmapTextService
     ) {
         this.uiLayer = uiLayer;
         this.economyService = economyService;
         this.placementController = placementController;
         this.spriteService = spriteService;
         this.soundService = soundService;
+        this.bitmapTextService = bitmapTextService;
     }
 
     public init(gameContainer: Container) {
-        this.initBitmapFont();
         this.createBalanceDisplay();
         this.createTowerButtons(gameContainer);
         this.createBoosterButtons(gameContainer);
@@ -121,16 +123,13 @@ export class UIManager {
         container.addChild(priceText);
     }
 
-    private initBitmapFont() {
-        BitmapFont.from(FontConstants.BITMAP_VCR_FONT.fontName, FontConstants.BITMAP_VCR_FONT);
-    }
-
     private createBalanceDisplay() {
         const balanceContainer = new Container();
 
-        this.balanceText = new BitmapText(`Balance: ${this.economyService.getBalance()}`, {
-            fontName: FontConstants.BITMAP_VCR_FONT.fontName
-        });
+        this.balanceText = this.bitmapTextService.createText(
+            `Balance: ${this.economyService.getBalance()}`,
+            {fontSize: 50}
+        );
 
         balanceContainer.x = 20;
         balanceContainer.y = 20;

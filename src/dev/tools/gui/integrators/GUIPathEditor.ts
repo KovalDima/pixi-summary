@@ -63,7 +63,7 @@ export class GUIPathEditor {
             point.y = y;
         }
 
-        this.App.entityManager.updateDebugMonsterPos(index, x, y);
+        this.App.entityManager?.updateDebugMonsterPos(index, x, y);
     }
 
     private printJson() {

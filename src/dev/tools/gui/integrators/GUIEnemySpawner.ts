@@ -9,10 +9,10 @@ export class GUIEnemySpawner {
 
     private actions = {
         spawnEnemy: () => {
-            this.App.entityManager.spawnEnemy();
+            this.App.entityManager?.spawnEnemy();
         },
         debugShowAll: () => {
-            this.App.entityManager.debugSpawnAllPoints();
+            this.App.entityManager?.debugSpawnAllPoints();
         }
     };
 

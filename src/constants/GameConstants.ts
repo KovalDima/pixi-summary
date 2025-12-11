@@ -34,4 +34,6 @@ export class GameConstants {
             position: { x: 900, y: 950 },
         },
     ];
+
+    public static readonly PLAYER_MAX_HP = 20;
 }

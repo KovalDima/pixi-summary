@@ -4,6 +4,7 @@ import { AssetsConstants } from "../../constants/AssetsConstants";
 import { SpriteService } from "../../services/SpriteService";
 import { DepthCalculator } from "../../utils/DepthCalculator";
 import { Config } from "../../Config";
+import { EffectUtils } from "../../utils/EffectUtils";
 
 export class Enemy extends Container {
     private readonly sprite: Sprite;
@@ -18,6 +19,7 @@ export class Enemy extends Container {
     private maxHp: number = 50;
     private currentHp: number;
     public reward: number = 10;
+    public damageToPlayer: number = 1;
 
     constructor(
         spriteService: SpriteService,
@@ -100,13 +102,8 @@ export class Enemy extends Container {
             return;
         }
 
-        const flashingDelayMS = 100;
         this.currentHp -= amount;
-        this.sprite.tint = Config.colors.Red;
-
-        setTimeout(() => {
-            this.sprite.tint = Config.colors.White;
-        }, flashingDelayMS);
+        EffectUtils.blinkRed(this.sprite);
 
         if (this.currentHp <= 0) {
             this.die();

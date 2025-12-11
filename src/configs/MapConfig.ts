@@ -23,12 +23,12 @@ export class MapConfig {
         {"x": 384, "y": 232}, {"x": 360, "y": 260}, {"x": 335, "y": 335}, {"x": 360, "y": 402},
         {"x": 389, "y": 427}, {"x": 416, "y": 473}, {"x": 397, "y": 499}, {"x": 362, "y": 507},
         {"x": 314, "y": 491}, {"x": 255, "y": 467}, {"x": 204, "y": 486}, {"x": 188, "y": 532},
-        {"x": 209, "y": 572}, {"x": 244, "y": 593}, {"x": 306, "y": 615}, {"x": 386, "y": 618},
+        {"x": 217, "y": 565}, {"x": 244, "y": 593}, {"x": 306, "y": 615}, {"x": 386, "y": 618},
         {"x": 448, "y": 585}, {"x": 483, "y": 529}, {"x": 510, "y": 470}, {"x": 695, "y": 333},
         {"x": 763, "y": 327}, {"x": 806, "y": 346}, {"x": 841, "y": 386}, {"x": 849, "y": 435},
         {"x": 835, "y": 481}, {"x": 784, "y": 515}, {"x": 623, "y": 564}, {"x": 591, "y": 618},
         {"x": 585, "y": 663}, {"x": 566, "y": 714}, {"x": 526, "y": 754}, {"x": 462, "y": 787},
-        {"x": 368, "y": 787}, {"x": 300, "y": 749}, {"x": 239, "y": 692}, {"x": 222, "y": 634}
+        {"x": 368, "y": 787}, {"x": 300, "y": 749}, {"x": 239, "y": 692}, {"x": 229, "y": 650}
     ];
 
     private static readonly OBSTACLES_DATA: TDetourConfig[] = [
@@ -63,8 +63,8 @@ export class MapConfig {
             detourPoints: [{x: 290, y: 451}]
         },
         {
-            obstacleIndex: 29,
-            enterIndex: 28,
+            obstacleIndex: 28,
+            enterIndex: 27,
             exitIndex: 32,
             detourPoints: [{x: 279, y: 557}, {x: 341, y: 583}, {x: 410, y: 582}]
         },
@@ -158,6 +158,10 @@ export class MapConfig {
 
     public static getFinishNodeId() {
         return `main_node_${this.MAIN_PATH_POINTS.length - 1}`;
+    }
+
+    public static getFinishNodePosition() {
+        return this.MAIN_PATH_POINTS.at(-1) ?? {x: 0, y: 0};
     }
 
     public static getTowerSlots(): TTowerSlot[] {
