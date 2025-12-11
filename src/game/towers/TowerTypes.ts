@@ -10,4 +10,8 @@ export type TTowerConfig = {
     price: number,
     animationName?: string,
     animationSpeed?: number,
+    damage: number,
+    range: number,
+    fireRate: number,
+    projectileSpeed: number,
 }

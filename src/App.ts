@@ -15,6 +15,7 @@ import { UIManager } from "./game/ui/UIManager";
 import { TowerManager } from "./game/towers/TowerManager";
 import { BoosterManager } from "./game/boosters/BoosterManager";
 import { HighlightService } from "./services/HighlightService";
+import { ProjectileManager } from "./game/projectiles/ProjectileManager";
 
 export class App {
     public readonly app: Application;
@@ -28,6 +29,9 @@ export class App {
     // TODO:
     //  make private again
     public entityManager!: EntityManager;
+    private towerManager!: TowerManager;
+    private projectileManager!: ProjectileManager;
+    private boosterManager!: BoosterManager;
     private objectPlacementController!: ObjectPlacementController;
     private readonly domEventHelper: DomEventHelper;
 
@@ -40,7 +44,6 @@ export class App {
         this.soundService = new SoundService();
         this.economyService = new EconomyService(1500);
         this.domEventHelper = new DomEventHelper();
-        this.soundService = new SoundService();
 
         this.setup().then(() => {
             this.runInitialEffects();
@@ -63,21 +66,25 @@ export class App {
 
         const highlightService = new HighlightService(this.gameContainer);
 
+        this.projectileManager = new ProjectileManager(this.gameContainer);
+
         this.entityManager = new EntityManager(
             this.gameContainer,
             this.animatedSpriteService,
-            this.spriteService
+            this.spriteService,
+            this.economyService
         );
 
-        const towerManager = new TowerManager(
+        this.towerManager = new TowerManager(
             this.gameContainer,
             this.spriteService,
             this.animatedSpriteService,
             this.soundService,
-            highlightService
+            highlightService,
+            this.projectileManager
         );
 
-        const boosterManager = new BoosterManager(
+        this.boosterManager = new BoosterManager(
             this.gameContainer,
             this.spriteService,
             this.soundService,
@@ -87,9 +94,8 @@ export class App {
 
         this.objectPlacementController = new ObjectPlacementController(
             this.gameContainer,
-            this.entityManager,
-            towerManager,
-            boosterManager,
+            this.towerManager,
+            this.boosterManager,
             this.spriteService,
             this.domEventHelper,
             this.soundService,
@@ -120,6 +126,14 @@ export class App {
     private startGameLoop() {
         this.app.ticker.add((delta) => {
             this.entityManager.update(delta);
+
+            if (this.projectileManager) {
+                this.projectileManager.update(delta);
+            }
+
+            if (this.towerManager && this.entityManager) {
+                this.towerManager.update(delta, this.entityManager.getEnemies());
+            }
         });
     }
 

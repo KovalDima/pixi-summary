@@ -6,6 +6,7 @@ import { type SpriteService } from "../services/SpriteService";
 import { PathfindingService } from "../core/pathfinding/PathfindingService";
 import { MapConfig } from "../configs/MapConfig";
 import { Enemy } from "./entities/Enemy";
+import type { EconomyService } from "../services/EconomyService";
 
 export type TFlameConfig = {
     position: IPointData,
@@ -20,6 +21,7 @@ export class EntityManager {
     private readonly animatedSpriteService: AnimatedSpriteService;
     private readonly spriteService: SpriteService;
     private pathfindingService: PathfindingService;
+    private readonly economyService: EconomyService;
     private enemies: Enemy[] = [];
     private occupiedNodes: Set<string> = new Set();
     public debugMonsters: Enemy[] = [];
@@ -27,12 +29,18 @@ export class EntityManager {
     constructor(
         gameContainer: Container,
         animatedSpriteService: AnimatedSpriteService,
-        spriteService: SpriteService
+        spriteService: SpriteService,
+        economyService: EconomyService
     ) {
         this.gameContainer = gameContainer;
         this.animatedSpriteService = animatedSpriteService;
         this.spriteService = spriteService;
+        this.economyService = economyService;
         this.pathfindingService = new PathfindingService(MapConfig.getNodes(), MapConfig.getEdges());
+    }
+
+    public getEnemies() {
+        return this.enemies;
     }
 
     public registerObstacle(nodeId: string) {
@@ -52,7 +60,7 @@ export class EntityManager {
         const nodes = MapConfig.getNodes();
 
         nodes.forEach((node) => {
-            const enemy = new Enemy(this.spriteService, [node], () => {});
+            const enemy = new Enemy(this.spriteService, [node], () => {}, () => {});
             this.enemies.push(enemy);
             this.gameContainer.addChild(enemy);
             this.debugMonsters.push(enemy);
@@ -87,9 +95,15 @@ export class EntityManager {
         const endId = MapConfig.getFinishNodeId();
 
         const path = this.pathfindingService.findPath(startId, endId);
-        const enemy = new Enemy(this.spriteService, path, () => {
-            this.removeEnemy(enemy);
-        });
+        const enemy = new Enemy(
+            this.spriteService,
+            path,
+            () => this.removeEnemy(enemy),
+            () => {
+                this.economyService.addMoney(enemy.reward);
+                this.removeEnemy(enemy);
+            }
+        );
 
         this.enemies.push(enemy);
         this.gameContainer.addChild(enemy);

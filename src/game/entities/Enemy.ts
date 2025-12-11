@@ -3,6 +3,7 @@ import { PathNodeType, type TPathNode } from "../../core/pathfinding/Pathfinding
 import { AssetsConstants } from "../../constants/AssetsConstants";
 import { SpriteService } from "../../services/SpriteService";
 import { DepthCalculator } from "../../utils/DepthCalculator";
+import { Config } from "../../Config";
 
 export class Enemy extends Container {
     private readonly sprite: Sprite;
@@ -13,11 +14,22 @@ export class Enemy extends Container {
     private readonly baseSpeed: number = 2;
     private currentSpeed: number = this.baseSpeed;
     private readonly reachedFinishCallback: () => void;
+    private readonly killedCallback: () => void;
+    private maxHp: number = 50;
+    private currentHp: number;
+    public reward: number = 10;
 
-    constructor(spriteService: SpriteService, path: TPathNode[], onReachedFinish: () => void) {
+    constructor(
+        spriteService: SpriteService,
+        path: TPathNode[],
+        onReachedFinish: () => void,
+        onKilled: () => void
+    ) {
         super();
         this.path = path;
         this.reachedFinishCallback = onReachedFinish;
+        this.killedCallback = onKilled;
+        this.currentHp = this.maxHp;
 
         this.sprite = spriteService.createSprite(AssetsConstants.MONSTER_TEXTURE_ALIAS);
         this.addChild(this.sprite);
@@ -29,6 +41,7 @@ export class Enemy extends Container {
         }
 
         this.updateScaleAndDepth();
+        // this.drawHealthBar(); ??
     }
 
     public getCurrentTargetNodeId() {
@@ -80,6 +93,30 @@ export class Enemy extends Container {
         }
 
         this.updateScaleAndDepth();
+    }
+
+    public takeDamage(amount: number) {
+        if (this.currentHp <= 0) {
+            return;
+        }
+
+        const flashingDelayMS = 100;
+        this.currentHp -= amount;
+        this.sprite.tint = Config.colors.Red;
+
+        setTimeout(() => {
+            this.sprite.tint = Config.colors.White;
+        }, flashingDelayMS);
+
+        if (this.currentHp <= 0) {
+            this.die();
+        }
+    }
+
+    private die() {
+        this.killedCallback();
+        // death/coin animation ??
+        this.destroy();
     }
 
     private setNextTargetPoint() {

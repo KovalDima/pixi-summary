@@ -1,6 +1,5 @@
 import { type Container, type FederatedPointerEvent, type IPointData, Sprite } from "pixi.js";
 import { type SpriteService } from "../../services/SpriteService";
-import { type EntityManager } from "../EntityManager";
 import type { SoundService } from "../../services/SoundService";
 import { AssetsConstants } from "../../constants/AssetsConstants";
 import { SnappingService } from "../../services/SnappingService";
@@ -34,7 +33,6 @@ export type TPlaceableItem = TTowerItem | TBoosterItem;
 
 export class ObjectPlacementController {
     private readonly gameContainer: Container;
-    private readonly entityManager: EntityManager;
     private readonly towerManager: TowerManager;
     private readonly boosterManager: BoosterManager;
     private readonly spriteService: SpriteService;
@@ -55,7 +53,6 @@ export class ObjectPlacementController {
 
     constructor(
         gameContainer: Container,
-        entityManager: EntityManager,
         towerManager: TowerManager,
         boosterManager: BoosterManager,
         spriteService: SpriteService,
@@ -63,7 +60,6 @@ export class ObjectPlacementController {
         soundService: SoundService
     ) {
         this.gameContainer = gameContainer;
-        this.entityManager = entityManager;
         this.towerManager = towerManager;
         this.boosterManager = boosterManager;
         this.spriteService = spriteService;

@@ -8,6 +8,9 @@ import { type SoundService } from "../../services/SoundService";
 import { HighlightService } from "../../services/HighlightService";
 import { Config } from "../../Config";
 import { MapConfig } from "../../configs/MapConfig";
+import { Tower } from "./Tower";
+import { type ProjectileManager } from "../projectiles/ProjectileManager";
+import { type Enemy } from "../entities/Enemy";
 
 export class TowerManager {
     private readonly gameContainer: Container;
@@ -15,9 +18,9 @@ export class TowerManager {
     private readonly animatedSpriteService: AnimatedSpriteService;
     private readonly soundService: SoundService;
     private readonly highlightService: HighlightService;
+    private readonly projectileManager: ProjectileManager;
 
-    // TODO: do I need this towers?
-    private towers: Sprite[] = [];
+    private towers: Tower[] = [];
     private occupiedSlots: Set<string> = new Set();
 
     constructor(
@@ -25,13 +28,15 @@ export class TowerManager {
         spriteService: SpriteService,
         animatedSpriteService: AnimatedSpriteService,
         soundService: SoundService,
-        highlightService: HighlightService
+        highlightService: HighlightService,
+        projectileManager: ProjectileManager,
     ) {
         this.gameContainer = gameContainer;
         this.spriteService = spriteService;
         this.animatedSpriteService = animatedSpriteService;
         this.soundService = soundService;
         this.highlightService = highlightService;
+        this.projectileManager = projectileManager;
     }
 
     public isSlotOccupied(slotId: string) {
@@ -43,13 +48,16 @@ export class TowerManager {
             return;
         }
 
-        const towerObject = this.getTower(config);
+        const towerView = this.getTowerView(config);
+
+        towerView.anchor.set(0.5, 0.75);
+
+        const towerObject = new Tower(config, towerView, this.projectileManager);
         const towerScale = DepthCalculator.getTowerScale(position.y);
         const towerZIndex = position.y;
 
         towerObject.position.set(position.x, position.y);
         towerObject.scale.set(towerScale);
-        towerObject.anchor.set(0.5, 0.75);
         towerObject.zIndex = towerZIndex;
 
         this.towers.push(towerObject);
@@ -77,7 +85,13 @@ export class TowerManager {
         this.highlightService.clear();
     }
 
-    private getTower(config: TTowerConfig) {
+    public update(delta: number, enemies: Enemy[]) {
+        this.towers.forEach((tower) => {
+            tower.update(delta, enemies);
+        });
+    }
+
+    private getTowerView(config: TTowerConfig) {
         let tower;
         switch (config.type) {
             case TowerType.REGULAR_TOWER:

@@ -11,6 +11,10 @@ export class TowerRegistry {
                 assetAlias: AssetsConstants.REGULAR_TOWER_ALIAS,
                 iconAlias: AssetsConstants.REGULAR_TOWER_ALIAS,
                 price: 100,
+                damage: 15,
+                range: 150,
+                fireRate: 2000,
+                projectileSpeed: 8,
             }
         ],
         [
@@ -22,6 +26,10 @@ export class TowerRegistry {
                 price: 200,
                 animationName: AnimationConstants.ARCHER_TOWER_BUILDING,
                 animationSpeed: 0.03,
+                damage: 10,
+                range: 200,
+                fireRate: 1200,
+                projectileSpeed: 12,
             }
         ]
     ]);
