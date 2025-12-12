@@ -14,6 +14,9 @@ export class AssetsConstants {
     public static readonly ARCHER_TOWER_ALIAS = "tower_2_4";
     public static readonly ARCHER_TOWER_ANIM_ALIAS = "tower_2_progress";
 
+    public static readonly PROJECTILE_ALIAS = "projectile";
+    public static readonly ARROW_ALIAS = "arrow";
+
     public static readonly ROADBLOCK_BOOSTER_ALIAS = "roadblock_booster";
 
     public static readonly SOUND_CLICK = "click";

@@ -74,7 +74,7 @@ export class App {
 
         const highlightService = new HighlightService(this.gameContainer);
 
-        this.projectileManager = new ProjectileManager(this.gameContainer);
+        this.projectileManager = new ProjectileManager(this.gameContainer, this.spriteService);
 
         this.entityManager = new EntityManager(
             this.gameContainer,

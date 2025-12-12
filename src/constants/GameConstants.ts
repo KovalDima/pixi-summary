@@ -14,7 +14,7 @@ export class GameConstants {
     public static readonly DEPTH_MIN_Y = 100;
     public static readonly DEPTH_MAX_Y = 750;
     public static readonly TOWER_MIN_SCALE = 0.14;
-    public static readonly TOWER_MAX_SCALE = 0.18;
+    public static readonly TOWER_MAX_SCALE = 0.155;
 
     public static readonly UI_ELEMENT_SCALE = 0.15;
     public static readonly TOWER_BUTTON_POSITIONS: { type: TowerType, position: IPointData }[] = [

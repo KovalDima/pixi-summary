@@ -20,6 +20,8 @@ export const manifest = {
                 { alias: AssetsConstants.SYMBOLS_ATLAS_ALIAS, src: "resources/spritesheets/symbols.json" },
                 { alias: AssetsConstants.ROADBLOCK_BOOSTER_ALIAS, src: "resources/boosters/roadblock_booster.png" },
                 { alias: AssetsConstants.MAGIC_GATE_ALIAS, src: "resources/gate/magic_gate.png" },
+                { alias: AssetsConstants.PROJECTILE_ALIAS, src: "resources/projectiles/projectile.png" },
+                { alias: AssetsConstants.ARROW_ALIAS, src: "resources/projectiles/arrow.png" },
             ]
         }
     ],

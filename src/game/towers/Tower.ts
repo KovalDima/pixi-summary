@@ -1,4 +1,4 @@
-import { Container, Sprite } from "pixi.js";
+import { Container, Sprite, AnimatedSprite } from "pixi.js";
 import type { TTowerConfig } from "./TowerTypes";
 import type { Enemy } from "../entities/Enemy";
 import type { ProjectileManager } from "../projectiles/ProjectileManager";
@@ -8,6 +8,7 @@ export class Tower extends Container {
     private readonly projectileManager: ProjectileManager;
     private readonly view: Sprite | Container;
     private cooldownTimer: number = 0;
+    private isBuilding: boolean = false;
 
     constructor(
         config: TTowerConfig,
@@ -19,9 +20,20 @@ export class Tower extends Container {
         this.view = view;
         this.projectileManager = projectileManager;
         this.addChild(this.view);
+
+        if (this.view instanceof AnimatedSprite) {
+            this.isBuilding = true;
+            this.view.onComplete = () => {
+                this.isBuilding = false;
+            };
+        }
     }
 
     public update(delta: number, enemies: Enemy[]) {
+        if (this.isBuilding) {
+            return;
+        }
+
         const deltaMS = delta * 16.66;
 
         if (this.cooldownTimer > 0) {
@@ -38,8 +50,8 @@ export class Tower extends Container {
     }
 
     private findTarget(enemies: Enemy[]) {
-        let closestEnemy: Enemy | null = null;
-        let minDistance = this.config.range;
+        let furthestEnemy: Enemy | null = null;
+        let maxDistance = 0;
 
         for (const enemy of enemies) {
             if (enemy.destroyed) {
@@ -51,13 +63,15 @@ export class Tower extends Container {
             const distanceY = enemy.y - this.y;
             const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
 
-            if (distance <= minDistance) {
-                minDistance = distance;
-                closestEnemy = enemy;
+            if (distance <= this.config.range) {
+                if (distance > maxDistance) {
+                    maxDistance = distance;
+                    furthestEnemy = enemy;
+                }
             }
         }
 
-        return closestEnemy;
+        return furthestEnemy;
     }
 
     private fire(target: Enemy) {
@@ -70,8 +84,7 @@ export class Tower extends Container {
         this.projectileManager.createProjectile(
             spawnPosition,
             target,
-            this.config.damage,
-            this.config.projectileSpeed
+            this.config
         );
 
         // TODO: shoot sound here

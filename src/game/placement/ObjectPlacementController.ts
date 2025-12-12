@@ -1,4 +1,4 @@
-import { type Container, type FederatedPointerEvent, type IPointData, Sprite } from "pixi.js";
+import { type Container, type FederatedPointerEvent, type IPointData, Sprite, Graphics } from "pixi.js";
 import { type SpriteService } from "../../services/SpriteService";
 import type { SoundService } from "../../services/SoundService";
 import { AssetsConstants } from "../../constants/AssetsConstants";
@@ -78,7 +78,7 @@ export class ObjectPlacementController {
             this.boosterManager.highlightAvailableNodes();
         }
 
-        this.createGhost(item.iconAlias, globalPosition);
+        this.createGhost(item, globalPosition);
         this.enableListeners();
         this.updateGhostPosition(this.gameContainer.toLocal(globalPosition));
     }
@@ -94,16 +94,27 @@ export class ObjectPlacementController {
         }
     }
 
-    private createGhost(iconAlias: string, globalPosition: IPointData) {
+    private createGhost(item: TPlaceableItem, globalPosition: IPointData) {
         const localPosition = this.gameContainer.toLocal(globalPosition);
 
-        this.ghostSprite = this.spriteService.createSprite(iconAlias);
+        this.ghostSprite = this.spriteService.createSprite(item.iconAlias);
         this.ghostSprite.alpha = this.ghostConfig.alpha;
         this.ghostSprite.scale.set(this.ghostConfig.scale);
         this.ghostSprite.position.copyFrom(localPosition);
 
-        if (this.activeStrategy instanceof TowerPlacementStrategy) {
+        if (item.type === PlaceableItemType.TOWER) {
+            const range = item.config.range;
+            const rangeGraphics = new Graphics();
+            const alpha = 0.5;
+
             this.ghostSprite.anchor.set(0.5, 0.75);
+            rangeGraphics.beginFill(0xFFFFFF, alpha);
+            rangeGraphics.drawCircle(0, 0, range);
+            rangeGraphics.endFill();
+            rangeGraphics.scale.set(1 / this.ghostConfig.scale);
+            rangeGraphics.pivot.set(0, 30);
+
+            this.ghostSprite.addChild(rangeGraphics);
         }
 
         this.gameContainer.addChild(this.ghostSprite);

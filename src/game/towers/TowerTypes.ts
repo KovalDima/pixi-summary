@@ -14,4 +14,6 @@ export type TTowerConfig = {
     range: number,
     fireRate: number,
     projectileSpeed: number,
+    projectileAlias: string,
+    projectileType: "linear" | "arc",
 }

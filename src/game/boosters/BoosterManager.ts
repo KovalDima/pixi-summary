@@ -67,8 +67,10 @@ export class BoosterManager {
 
         this.highlightService.show(availablePositions, {
             color: Config.colors.Green,
-            alpha: 0.5,
-            radius: 20
+            alpha: 0.2,
+            radius: 20,
+            lineWidth: 2,
+            lineColor: Config.colors.Green
         });
     }
 
