@@ -3,8 +3,14 @@ import { PathNodeType, type TPathNode } from "../../core/pathfinding/Pathfinding
 import { AssetsConstants } from "../../constants/AssetsConstants";
 import { SpriteService } from "../../services/SpriteService";
 import { DepthCalculator } from "../../utils/DepthCalculator";
-import { Config } from "../../Config";
 import { EffectUtils } from "../../utils/EffectUtils";
+
+export type TEnemyConfig = {
+    hp: number;
+    speed: number;
+    reward: number;
+    damageToPlayer: number;
+}
 
 export class Enemy extends Container {
     private readonly sprite: Sprite;
@@ -12,26 +18,34 @@ export class Enemy extends Container {
     private currentTargetIndex: number = 0;
     private currentTargetPoint: IPointData | null = null;
     private readonly randomOffsetRange = 15;
-    private readonly baseSpeed: number = 2;
-    private currentSpeed: number = this.baseSpeed;
+    private readonly baseSpeed: number;
+    private currentSpeed: number;
+    private readonly maxHp: number;
+    private currentHp: number;
+    public readonly reward: number;
+    public readonly damageToPlayer: number;
+
     private readonly reachedFinishCallback: () => void;
     private readonly killedCallback: () => void;
-    private maxHp: number = 50;
-    private currentHp: number;
-    public reward: number = 10;
-    public damageToPlayer: number = 1;
 
     constructor(
         spriteService: SpriteService,
         path: TPathNode[],
+        config: TEnemyConfig,
         onReachedFinish: () => void,
         onKilled: () => void
     ) {
         super();
         this.path = path;
+        this.maxHp = config.hp;
+        this.currentHp = this.maxHp;
+        this.baseSpeed = config.speed;
+        this.currentSpeed = this.baseSpeed;
+        this.reward = config.reward;
+        this.damageToPlayer = config.damageToPlayer;
+
         this.reachedFinishCallback = onReachedFinish;
         this.killedCallback = onKilled;
-        this.currentHp = this.maxHp;
 
         this.sprite = spriteService.createSprite(AssetsConstants.MONSTER_TEXTURE_ALIAS);
         this.addChild(this.sprite);
@@ -43,7 +57,6 @@ export class Enemy extends Container {
         }
 
         this.updateScaleAndDepth();
-        // this.drawHealthBar(); ??
     }
 
     public getCurrentTargetNodeId() {

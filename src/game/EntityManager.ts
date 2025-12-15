@@ -5,7 +5,7 @@ import { AnimationConstants } from "../constants/AnimationConstants";
 import { type SpriteService } from "../services/SpriteService";
 import { PathfindingService } from "../core/pathfinding/PathfindingService";
 import { MapConfig } from "../configs/MapConfig";
-import { Enemy } from "./entities/Enemy";
+import { Enemy, type TEnemyConfig } from "./entities/Enemy";
 import type { EconomyService } from "../services/EconomyService";
 
 export type TFlameConfig = {
@@ -24,7 +24,6 @@ export class EntityManager {
     private readonly economyService: EconomyService;
     private enemies: Enemy[] = [];
     private occupiedNodes: Set<string> = new Set();
-    public debugMonsters: Enemy[] = [];
     private readonly onEnemyReachedFinish: (damage: number) => void;
 
     constructor(
@@ -56,30 +55,6 @@ export class EntityManager {
         return this.occupiedNodes;
     }
 
-    public debugSpawnAllPoints() {
-        this.debugMonsters.forEach(m => m.destroy());
-        this.debugMonsters = [];
-
-        const nodes = MapConfig.getNodes();
-
-        nodes.forEach((node) => {
-            const enemy = new Enemy(this.spriteService, [node], () => {}, () => {});
-            this.enemies.push(enemy);
-            this.gameContainer.addChild(enemy);
-            this.debugMonsters.push(enemy);
-        });
-
-        this.gameContainer.sortChildren();
-    }
-
-    public updateDebugMonsterPos(index: number, x: number, y: number) {
-        if (this.debugMonsters[index]) {
-            this.debugMonsters[index].x = x;
-            this.debugMonsters[index].y = y;
-            this.debugMonsters[index].zIndex = y;
-        }
-    }
-
     public addFlame(config: TFlameConfig) {
         const flameAnim = this.animatedSpriteService.createAnimation(
             AssetsConstants.FLAME_ANIM_ALIAS, AnimationConstants.FLAME
@@ -93,14 +68,16 @@ export class EntityManager {
         this.gameContainer.addChild(flameAnim);
     }
 
-    public spawnEnemy() {
+    public spawnWaveEnemy(config: TEnemyConfig) {
         const startId = MapConfig.START_NODE_ID;
         const endId = MapConfig.getFinishNodeId();
 
         const path = this.pathfindingService.findPath(startId, endId);
+
         const enemy = new Enemy(
             this.spriteService,
             path,
+            config,
             () => {
                 this.onEnemyReachedFinish(enemy.damageToPlayer);
                 this.removeEnemy(enemy);

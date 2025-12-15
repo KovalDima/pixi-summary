@@ -20,6 +20,7 @@ import { MagicGate } from "./game/entities/MagicGate";
 import { MapConfig } from "./configs/MapConfig";
 import { GameOverPopup } from "./game/ui/GameOverPopup";
 import { BitmapTextService } from "./services/BitmapTextService";
+import { WaveManager } from "./game/waves/WaveManager";
 
 export class App {
     public readonly app: Application;
@@ -39,6 +40,8 @@ export class App {
     private projectileManager: ProjectileManager | null = null;
     private boosterManager: BoosterManager | null = null;
     private objectPlacementController: ObjectPlacementController | null = null;
+    private waveManager: WaveManager | null = null;
+    private uiManager: UIManager | null = null;
     private readonly domEventHelper: DomEventHelper;
 
     constructor(app: Application) {
@@ -94,6 +97,8 @@ export class App {
 
         this.createMagicGate();
 
+        this.waveManager = new WaveManager(this.entityManager);
+
         this.towerManager = new TowerManager(
             this.gameContainer,
             this.spriteService,
@@ -121,15 +126,27 @@ export class App {
             this.soundService,
         );
 
-        new UIManager(
+        this.uiManager = new UIManager(
             this.sceneLayerManager.uiLayer,
             this.app.renderer,
             this.economyService,
             this.objectPlacementController,
             this.spriteService,
             this.soundService,
-            this.bitmapTextService
-        ).init(this.gameContainer);
+            this.bitmapTextService,
+            () => this.waveManager?.startNextWave()
+        );
+        this.uiManager.init(this.gameContainer);
+
+        // TODO: change (observer?)
+        this.waveManager.onWaveChange = (wave) => {
+            this.uiManager?.updateWaveInfo(wave, 0);
+        };
+
+        // TODO: change (observer?)
+        this.waveManager.onWaveTimerUpdate = (timeLeft) => {
+            this.uiManager?.updateWaveInfo(this.waveManager!["currentWave"], timeLeft);
+        };
 
         this.startGameLoop();
     }
@@ -180,6 +197,7 @@ export class App {
     private startGameLoop() {
         this.app.ticker.add((delta) => {
             this.entityManager?.update(delta);
+            this.waveManager?.update(delta);
 
             if (this.projectileManager) {
                 this.projectileManager.update(delta);

@@ -29,6 +29,8 @@ export class UIManager {
     private nextWaveButton: NextWaveButton | null = null;
     private gameContainer: ResponsiveContainer | null = null;
 
+    private readonly onNextWaveClick: () => void;
+
     constructor(
         uiLayer: Container,
         renderer: IRenderer,
@@ -36,7 +38,8 @@ export class UIManager {
         placementController: ObjectPlacementController,
         spriteService: SpriteService,
         soundService: SoundService,
-        bitmapTextService: BitmapTextService
+        bitmapTextService: BitmapTextService,
+        onNextWaveClick: () => void
     ) {
         this.uiLayer = uiLayer;
         this.renderer = renderer;
@@ -45,6 +48,7 @@ export class UIManager {
         this.spriteService = spriteService;
         this.soundService = soundService;
         this.bitmapTextService = bitmapTextService;
+        this.onNextWaveClick = onNextWaveClick;
     }
 
     public init(gameContainer: ResponsiveContainer) {
@@ -57,6 +61,13 @@ export class UIManager {
 
         this.renderer.on("resize", this.updateLayout, this);
         this.updateLayout();
+    }
+
+    public updateWaveInfo(waveIndex: number, timeToNextWave: number) {
+        if (this.topInfoPanel) {
+            this.topInfoPanel.updateWave(waveIndex);
+            this.topInfoPanel.updateNextWaveTimer(timeToNextWave);
+        }
     }
 
     private createTopPanel() {
@@ -122,7 +133,8 @@ export class UIManager {
 
     private createNextWaveButton() {
         this.nextWaveButton = new NextWaveButton(this.spriteService, () => {
-            console.log("Next wave func");
+            this.soundService.play(AssetsConstants.SOUND_CLICK);
+            this.onNextWaveClick();
         });
         this.uiLayer.addChild(this.nextWaveButton);
     }
