@@ -8,12 +8,18 @@ export class SceneFactory {
         this.renderer = renderer;
     }
 
-    public createResponsiveContainer(texture: Texture, mode: ResponsiveMode, paddings?: TPaddings) {
+    public createResponsiveContainer(
+        texture: Texture,
+        mode: ResponsiveMode,
+        paddings?: TPaddings,
+        scaleMultiplier: number = 1
+    ) {
         const container = new ResponsiveContainer(this.renderer, {
             logicalWidth: texture.width,
             logicalHeight: texture.height,
             mode,
             paddings,
+            scaleMultiplier
         });
 
         container.addChild(new Sprite(texture));

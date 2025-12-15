@@ -1,4 +1,4 @@
-import { Container, type Sprite } from "pixi.js";
+import { Container, type Sprite, type BitmapText } from "pixi.js";
 import { AssetsConstants } from "../../constants/AssetsConstants";
 import { type SpriteService } from "../../services/SpriteService";
 import { type BitmapTextService } from "../../services/BitmapTextService";
@@ -6,37 +6,17 @@ import { Config } from "../../Config";
 
 export class TopInfoPanel extends Container {
     private readonly background: Sprite;
-    private readonly labelFontSize = 25;
-    private readonly labelPositionY = 30;
-    private readonly labelTint = 50;
-    private readonly valueFontSize = 80;
-    private readonly valuePositionY = Config.colors.White;
+    private readonly labelFontSize = 30;
+    private readonly labelPositionY = 24;
+    private readonly labelTint = Config.colors.White;
+    private readonly valueFontSize = 50;
+    private readonly valuePositionY = 50;
     private readonly valueTint = Config.colors.Brown;
 
-    private infoItems = [
-        {
-            label: "Points",
-            value: "100M500K",
-            positionX: -320,
-        },
-        {
-            label: "Wave",
-            value: "7",
-            positionX: -110,
-        },
-        {
-            label: "Next wave",
-            value: "1:43",
-            positionX: 110,
-        },
-        {
-            label: "Killed",
-            value: "3/14",
-            positionX: 320,
-        }
-    ]
-    // private scoreText: BitmapText;
-    // private waveText: BitmapText;
+    private balanceText: BitmapText | null = null;
+    private waveText: BitmapText | null = null;
+    private nextWaveText: BitmapText | null = null;
+    private killedText: BitmapText | null = null;
 
     constructor(spriteService: SpriteService, bitmapTextService: BitmapTextService) {
         super();
@@ -44,7 +24,7 @@ export class TopInfoPanel extends Container {
         this.background.anchor.set(0.5, 0);
         this.addChild(this.background);
 
-        this.createTextForItems(bitmapTextService);
+        this.initTexts(bitmapTextService);
     }
 
     public get width() {
@@ -55,23 +35,35 @@ export class TopInfoPanel extends Container {
         return this.background.height;
     }
 
-    private createTextForItems(bitmapTextService: BitmapTextService) {
-        this.infoItems.forEach((item) => {
-            const label = bitmapTextService.createText(item.label, {
-                fontSize: this.labelFontSize,
-                tint: this.labelTint
-            });
-            const value = bitmapTextService.createText(item.value, {
-                fontSize: this.valueFontSize,
-                tint: this.valueTint
-            });
+    private initTexts(bitmapTextService: BitmapTextService) {
+        this.createGroup(bitmapTextService, "POINTS", -345, (text) => this.balanceText = text);
+        this.createGroup(bitmapTextService, "WAVE", -110, (text) => this.waveText = text);
+        this.createGroup(bitmapTextService, "NEXT WAVE", 110, (text) => this.nextWaveText = text);
+        this.createGroup(bitmapTextService, "KILLED", 345, (text) => this.killedText = text);
+    }
 
-            label.position.set(item.positionX, this.labelPositionY);
-            value.position.set(item.positionX, this.valuePositionY);
+    private createGroup(
+        bitmapTextService: BitmapTextService,
+        labelStr: string,
+        x: number,
+        storeRef: (text: BitmapText) => void
+    ) {
+        const label = bitmapTextService.createText(labelStr, {
+            fontSize: this.labelFontSize,
+            tint: this.labelTint
+        });
+        const value = bitmapTextService.createText("-", {
+            fontSize: this.valueFontSize,
+            tint: this.valueTint
+        });
 
-            this.addChild(label);
-            this.addChild(value);
-        })
+        label.anchor.set(0.5, 0);
+        label.position.set(x, this.labelPositionY);
+        this.addChild(label);
+        value.anchor.set(0.5, 0);
+        value.position.set(x, this.valuePositionY);
+        this.addChild(value);
 
+        storeRef(value);
     }
 }

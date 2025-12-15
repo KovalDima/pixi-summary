@@ -1,24 +1,30 @@
-import { Container, Sprite } from "pixi.js";
+import { Container, Sprite, type BitmapText } from "pixi.js";
 import { AssetsConstants } from "../../constants/AssetsConstants";
 import { SpriteService } from "../../services/SpriteService";
-import {BitmapTextService} from "../../services/BitmapTextService";
+import { BitmapTextService } from "../../services/BitmapTextService";
+import { Config } from "../../Config";
 
 export class ItemsPanel extends Container {
     private readonly background: Sprite;
     private readonly itemsContainer: Container;
+    private readonly labelText: BitmapText;
 
-    constructor(spriteService: SpriteService, label: string, bitmapTextService: BitmapTextService,) {
+    constructor(spriteService: SpriteService, label: string, bitmapTextService: BitmapTextService) {
         super();
         this.background = spriteService.createSprite(AssetsConstants.UI_ITEMS_PANEL_ALIAS);
         this.background.anchor.set(0.5);
         this.addChild(this.background);
 
-        // 2. Контейнер для слотів, щоб їх центрувати разом
+        this.labelText = bitmapTextService.createText(label, {
+            fontSize: 30,
+            tint: Config.colors.Brown
+        });
+
+        this.labelText.anchor.set(0.5);
+        this.labelText.position.set(0, -57);
+        this.addChild(this.labelText);
         this.itemsContainer = new Container();
         this.addChild(this.itemsContainer);
-
-        // TODO: Якщо потрібно додати заголовок панелі (наприклад "Вежі"),
-        // можна додати сюди BitmapText, переданий в конструктор.
     }
 
     public addItem(item: Container) {
@@ -27,22 +33,24 @@ export class ItemsPanel extends Container {
     }
 
     private updateLayout() {
-        const gap = 15;
-        let startX = 0;
+        const gap = 20;
+        const children = this.itemsContainer.children as Container[];
+        const slotsCount = this.itemsContainer.children.length;
 
-        const totalWidth = this.itemsContainer.children.reduce((acc, child, index) => {
-            // @ts-ignore
-            return acc + (child.width || 0) + (index > 0 ? gap : 0);
-        }, 0);
+        if (slotsCount === 0) {
+            return;
+        }
 
-        startX = -totalWidth / 2;
+        const contentWidth = children.reduce((sum, child) => sum + child.width, 0);
+        const totalWidth = contentWidth + (Math.max(0, slotsCount - 1) * gap);
 
-        let currentX = startX;
-        this.itemsContainer.children.forEach((child: any) => {
-            // Враховуємо, що у child anchor.x = 0.5
-            const halfWidth = child.width / 2;
-            child.position.set(currentX + halfWidth, 55);
-            currentX += child.width + gap;
+        let currentX = -totalWidth / 2;
+        const slotsY = 40;
+
+        children.forEach((child) => {
+            const childW = child.width;
+            child.position.set(currentX + childW / 2, slotsY);
+            currentX += childW + gap;
         });
     }
 

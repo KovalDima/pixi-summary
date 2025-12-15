@@ -33,6 +33,7 @@ export type TPlaceableItem = TTowerItem | TBoosterItem;
 
 export class ObjectPlacementController {
     private readonly gameContainer: Container;
+    private readonly rootContainer: Container;
     private readonly towerManager: TowerManager;
     private readonly boosterManager: BoosterManager;
     private readonly spriteService: SpriteService;
@@ -48,11 +49,12 @@ export class ObjectPlacementController {
     private readonly INVALID_TINT = 0xFF0000;
     private readonly ghostConfig = {
         scale: 0.14,
-        alpha: 0.5
+        alpha: 0.6
     };
 
     constructor(
         gameContainer: Container,
+        rootContainer: Container,
         towerManager: TowerManager,
         boosterManager: BoosterManager,
         spriteService: SpriteService,
@@ -60,6 +62,7 @@ export class ObjectPlacementController {
         soundService: SoundService
     ) {
         this.gameContainer = gameContainer;
+        this.rootContainer = rootContainer;
         this.towerManager = towerManager;
         this.boosterManager = boosterManager;
         this.spriteService = spriteService;
@@ -80,7 +83,7 @@ export class ObjectPlacementController {
 
         this.createGhost(item, globalPosition);
         this.enableListeners();
-        this.updateGhostPosition(this.gameContainer.toLocal(globalPosition));
+        this.processMove(globalPosition);
     }
 
     private createStrategy(item: TPlaceableItem): IPlacementStrategy {
@@ -95,12 +98,10 @@ export class ObjectPlacementController {
     }
 
     private createGhost(item: TPlaceableItem, globalPosition: IPointData) {
-        const localPosition = this.gameContainer.toLocal(globalPosition);
-
         this.ghostSprite = this.spriteService.createSprite(item.iconAlias);
         this.ghostSprite.alpha = this.ghostConfig.alpha;
         this.ghostSprite.scale.set(this.ghostConfig.scale);
-        this.ghostSprite.position.copyFrom(localPosition);
+        this.ghostSprite.position.copyFrom(globalPosition);
 
         if (item.type === PlaceableItemType.TOWER) {
             const range = item.config.range;
@@ -117,36 +118,45 @@ export class ObjectPlacementController {
             this.ghostSprite.addChild(rangeGraphics);
         }
 
-        this.gameContainer.addChild(this.ghostSprite);
+        this.rootContainer.addChild(this.ghostSprite);
     }
 
     private onGhostMove(event: FederatedPointerEvent) {
         if (!this.ghostSprite || !this.activeStrategy) {
             return;
         }
-        const localPosition = this.gameContainer.toLocal(event.global);
-        this.updateGhostPosition(localPosition);
+        this.processMove(event.global);
     }
 
-    private updateGhostPosition(localPosition: IPointData) {
+    private processMove(globalPosition: IPointData) {
         if (!this.ghostSprite || !this.activeStrategy) {
             return;
         }
 
-        const placementResult = this.activeStrategy.handleMove(localPosition);
+        const localGamePosition = this.gameContainer.toLocal(globalPosition);
+        const placementResult = this.activeStrategy.handleMove(localGamePosition);
 
-        this.ghostSprite.position.copyFrom(placementResult.position);
         this.isValidPlacement = placementResult.isValid;
         this.ghostSprite.tint = this.isValidPlacement ? this.VALID_TINT : this.INVALID_TINT;
+
+        const finalGlobalPos = this.gameContainer.toGlobal(placementResult.position);
+
+        this.ghostSprite.position.copyFrom(finalGlobalPos);
+
+        const currentMapScale = this.gameContainer.scale.x;
+        this.ghostSprite.scale.set(this.ghostConfig.scale * currentMapScale);
     }
 
-    private onPlace() {
+    private onPlace(event: FederatedPointerEvent) {
         if (!this.ghostSprite || !this.activeStrategy) {
             return;
         }
 
+        this.processMove(event.global);
+
         if (this.isValidPlacement) {
-            this.activeStrategy.place(this.ghostSprite.position);
+            const finalGamePos = this.gameContainer.toLocal(this.ghostSprite.position);
+            this.activeStrategy.place(finalGamePos);
             this.cancelPlacing();
         } else {
             this.soundService.play(AssetsConstants.SOUND_FAIL_BUILD);
@@ -168,16 +178,16 @@ export class ObjectPlacementController {
     }
 
     private enableListeners() {
-        this.gameContainer.on("pointermove", this.onGhostMove, this);
-        this.gameContainer.on("pointerup", this.onPlace, this);
-        this.gameContainer.on("pointerdown", this.onRightMouseClick, this);
+        this.rootContainer.on("pointermove", this.onGhostMove, this);
+        this.rootContainer.on("pointerup", this.onPlace, this);
+        this.rootContainer.on("pointerdown", this.onRightMouseClick, this);
         this.domEventHelper.on("keydown", this.onKeyDown, this);
     }
 
     private disableListeners() {
-        this.gameContainer.off("pointermove", this.onGhostMove, this);
-        this.gameContainer.off("pointerup", this.onPlace, this);
-        this.gameContainer.off("pointerdown", this.onRightMouseClick, this);
+        this.rootContainer.off("pointermove", this.onGhostMove, this);
+        this.rootContainer.off("pointerup", this.onPlace, this);
+        this.rootContainer.off("pointerdown", this.onRightMouseClick, this);
         this.domEventHelper.off("keydown", this.onKeyDown, this);
     }
 

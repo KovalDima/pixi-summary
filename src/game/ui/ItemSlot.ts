@@ -1,4 +1,4 @@
-import { Container, Sprite } from "pixi.js";
+import { Container, Sprite, type FederatedPointerEvent } from "pixi.js";
 import { AssetsConstants } from "../../constants/AssetsConstants";
 import { SpriteService } from "../../services/SpriteService";
 import { BitmapTextService } from "../../services/BitmapTextService";
@@ -14,6 +14,7 @@ export class ItemSlot extends Container {
     private readonly background: Sprite;
     private readonly icon: Sprite;
     private readonly price: Container;
+    private isPressed: boolean = false;
 
     constructor(
         spriteService: SpriteService,
@@ -35,13 +36,27 @@ export class ItemSlot extends Container {
             fontSize: 24,
             tint: Config.colors.White
         });
-        this.price.position.set(0, 35);
+        this.price.position.set(0, 22);
         this.addChild(this.price);
 
         this.eventMode = "static";
         this.cursor = "pointer";
-        this.on("pointerdown", () => {
-            onClick();
+
+        this.on("pointerdown", (e: FederatedPointerEvent) => {
+            this.isPressed = true;
+            e.stopPropagation();
+        });
+
+        this.on("pointerup", (e: FederatedPointerEvent) => {
+            if (this.isPressed) {
+                this.isPressed = false;
+                e.stopPropagation();
+                onClick();
+            }
+        });
+
+        this.on("pointerupoutside", () => {
+            this.isPressed = false;
         });
     }
 }

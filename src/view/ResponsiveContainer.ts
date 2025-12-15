@@ -13,10 +13,11 @@ export type TPaddings = {
 }
 
 export type TResponsiveOptions = {
-    logicalWidth: number;
-    logicalHeight: number;
-    mode: ResponsiveMode;
-    paddings?: TPaddings;
+    logicalWidth: number,
+    logicalHeight: number,
+    mode: ResponsiveMode,
+    paddings?: TPaddings,
+    scaleMultiplier?: number,
 }
 
 export class ResponsiveContainer extends Container {
@@ -25,6 +26,7 @@ export class ResponsiveContainer extends Container {
     private readonly logicalHeight: number;
     private readonly mode: ResponsiveMode;
     private paddings: Required<TPaddings>;
+    private readonly scaleMultiplier: number;
 
     constructor(renderer: IRenderer, options: TResponsiveOptions) {
         super();
@@ -33,6 +35,7 @@ export class ResponsiveContainer extends Container {
         this.logicalWidth = options.logicalWidth;
         this.logicalHeight = options.logicalHeight;
         this.mode = options.mode;
+        this.scaleMultiplier = options.scaleMultiplier ?? 1;
 
         this.paddings = {
             top: options.paddings?.top ?? 0,
@@ -82,6 +85,7 @@ export class ResponsiveContainer extends Container {
             scale = availableRatio > logicalRatio ? heightCoeff : widthCoeff;
         }
 
+        scale *= this.scaleMultiplier;
         this.scale.set(scale);
 
         this.x = this.paddings.left + (availableWidth - (this.logicalWidth * scale)) / 2;

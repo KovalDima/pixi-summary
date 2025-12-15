@@ -52,6 +52,8 @@ export class App {
         this.economyService = new EconomyService(1500);
         this.domEventHelper = new DomEventHelper();
 
+        this.app.stage.eventMode = "static";
+
         this.setup().then(() => {
             this.runInitialEffects();
         });
@@ -63,9 +65,15 @@ export class App {
         await AssetManager.loadGameAssets();
         this.bitmapTextService.init();
 
+        const mapScale = 1.1;
         const background = this.sceneFactory.createResponsiveContainer(textures.background, ResponsiveMode.cover);
 
-        this.gameContainer = this.sceneFactory.createResponsiveContainer(textures.gameMap, ResponsiveMode.contain, { top: 80, bottom: 80 });
+        this.gameContainer = this.sceneFactory.createResponsiveContainer(
+            textures.gameMap,
+            ResponsiveMode.contain,
+            { top: 60, bottom: 60 },
+            mapScale
+        );
         this.gameContainer.eventMode = "static";
         this.gameContainer.sortableChildren = true;
 
@@ -105,6 +113,7 @@ export class App {
 
         this.objectPlacementController = new ObjectPlacementController(
             this.gameContainer,
+            this.app.stage,
             this.towerManager,
             this.boosterManager,
             this.spriteService,
