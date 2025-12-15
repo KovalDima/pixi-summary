@@ -16,17 +16,8 @@ export class GameConstants {
     public static readonly TOWER_MIN_SCALE = 0.14;
     public static readonly TOWER_MAX_SCALE = 0.155;
 
-    public static readonly UI_ELEMENT_SCALE = 0.15;
-    public static readonly TOWER_BUTTON_POSITIONS: { type: TowerType, position: IPointData }[] = [
-        {
-            type: TowerType.REGULAR_TOWER,
-            position: { x: 50, y: 950 },
-        },
-        {
-            type: TowerType.ARCHER_TOWER,
-            position: { x: 160, y: 950 },
-        }
-    ];
+    public static readonly UI_ELEMENT_SCALE = 0.14;
+    public static readonly TOWER_BUTTONS: TowerType[] = [TowerType.REGULAR_TOWER, TowerType.ARCHER_TOWER];
 
     public static readonly BOOSTER_BUTTON_POSITIONS: { type: BoosterType, position: IPointData }[] = [
         {

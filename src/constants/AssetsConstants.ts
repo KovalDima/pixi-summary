@@ -30,4 +30,9 @@ export class AssetsConstants {
     public static readonly MONSTER_TEXTURE_ALIAS = "monster.png";
 
     public static readonly MAGIC_GATE_ALIAS = "magic_gate";
+
+    public static readonly UI_INFO_BAR_ALIAS = "info_bar";
+    public static readonly UI_ITEM_SLOT_ALIAS = "item_holder";
+    public static readonly UI_ITEMS_PANEL_ALIAS = "items_holder";
+    public static readonly UI_BTN_NEXT_WAVE_ALIAS = "btn_next_wave";
 }

@@ -24,7 +24,7 @@ export class ResponsiveContainer extends Container {
     private readonly logicalWidth: number;
     private readonly logicalHeight: number;
     private readonly mode: ResponsiveMode;
-    private readonly paddings: Required<TPaddings>;
+    private paddings: Required<TPaddings>;
 
     constructor(renderer: IRenderer, options: TResponsiveOptions) {
         super();
@@ -45,12 +45,28 @@ export class ResponsiveContainer extends Container {
         this.renderer.on("resize", this.resize, this);
     }
 
+    public setPaddings(paddings: TPaddings) {
+        this.paddings = {
+            top: paddings.top ?? this.paddings.top,
+            bottom: paddings.bottom ?? this.paddings.bottom,
+            left: paddings.left ?? this.paddings.left,
+            right: paddings.right ?? this.paddings.right,
+        };
+        this.resize();
+    }
+
     private resize() {
         const screenWidth = this.renderer.screen.width;
         const screenHeight = this.renderer.screen.height;
 
         const availableWidth = screenWidth - (this.paddings.left + this.paddings.right);
         const availableHeight = screenHeight - (this.paddings.top + this.paddings.bottom);
+
+        if (availableWidth <= 0 || availableHeight <= 0) {
+            this.visible = false;
+            return;
+        }
+        this.visible = true;
 
         const availableRatio = availableWidth / availableHeight;
         const logicalRatio = this.logicalWidth / this.logicalHeight;

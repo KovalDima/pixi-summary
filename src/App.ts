@@ -114,6 +114,7 @@ export class App {
 
         new UIManager(
             this.sceneLayerManager.uiLayer,
+            this.app.renderer,
             this.economyService,
             this.objectPlacementController,
             this.spriteService,

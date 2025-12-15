@@ -22,6 +22,10 @@ export const manifest = {
                 { alias: AssetsConstants.MAGIC_GATE_ALIAS, src: "resources/gate/magic_gate.png" },
                 { alias: AssetsConstants.PROJECTILE_ALIAS, src: "resources/projectiles/projectile.png" },
                 { alias: AssetsConstants.ARROW_ALIAS, src: "resources/projectiles/arrow.png" },
+                { alias: AssetsConstants.UI_INFO_BAR_ALIAS, src: "resources/ui/info_bar.png" },
+                { alias: AssetsConstants.UI_ITEM_SLOT_ALIAS, src: "resources/ui/item_holder.png" },
+                { alias: AssetsConstants.UI_ITEMS_PANEL_ALIAS, src: "resources/ui/items_holder.png" },
+                { alias: AssetsConstants.UI_BTN_NEXT_WAVE_ALIAS, src: "resources/ui/btn_next_wave.png" },
             ]
         }
     ],
