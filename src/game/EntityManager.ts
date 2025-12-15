@@ -1,4 +1,4 @@
-import { type Container, type IPointData } from "pixi.js";
+import { type Container, type IPointData, utils } from "pixi.js";
 import { AnimatedSpriteService } from "../services/AnimatedSpriteService";
 import { AssetsConstants } from "../constants/AssetsConstants";
 import { AnimationConstants } from "../constants/AnimationConstants";
@@ -16,7 +16,7 @@ export type TFlameConfig = {
 }
 
 // TODO: delete debug code
-export class EntityManager {
+export class EntityManager extends utils.EventEmitter {
     private readonly gameContainer: Container;
     private readonly animatedSpriteService: AnimatedSpriteService;
     private readonly spriteService: SpriteService;
@@ -33,6 +33,7 @@ export class EntityManager {
         economyService: EconomyService,
         onEnemyReachedFinish: (damage: number) => void
     ) {
+        super();
         this.gameContainer = gameContainer;
         this.animatedSpriteService = animatedSpriteService;
         this.spriteService = spriteService;
@@ -84,6 +85,7 @@ export class EntityManager {
             },
             () => {
                 this.economyService.addMoney(enemy.reward);
+                this.emit("enemy_killed");
                 this.removeEnemy(enemy);
             }
         );

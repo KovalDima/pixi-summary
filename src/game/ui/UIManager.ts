@@ -13,6 +13,7 @@ import { ItemsPanel } from "./ItemsPanel";
 import { NextWaveButton } from "./NextWaveButton";
 import { ItemSlot } from "./ItemSlot";
 import type { ResponsiveContainer } from "../../view/ResponsiveContainer";
+import { WaveManager } from "../waves/WaveManager";
 
 export class UIManager {
     private readonly uiLayer: Container;
@@ -22,6 +23,7 @@ export class UIManager {
     private readonly spriteService: SpriteService;
     private readonly soundService: SoundService;
     private readonly bitmapTextService: BitmapTextService;
+    private readonly waveManager: WaveManager;
 
     private topInfoPanel: TopInfoPanel | null = null;
     private towersPanel: ItemsPanel | null = null;
@@ -39,6 +41,7 @@ export class UIManager {
         spriteService: SpriteService,
         soundService: SoundService,
         bitmapTextService: BitmapTextService,
+        waveManager: WaveManager,
         onNextWaveClick: () => void
     ) {
         this.uiLayer = uiLayer;
@@ -48,6 +51,7 @@ export class UIManager {
         this.spriteService = spriteService;
         this.soundService = soundService;
         this.bitmapTextService = bitmapTextService;
+        this.waveManager = waveManager;
         this.onNextWaveClick = onNextWaveClick;
     }
 
@@ -58,6 +62,16 @@ export class UIManager {
         this.createTowersPanel();
         this.createBoostersPanel();
         this.createNextWaveButton();
+
+        this.economyService.on("balance_changed", (balance: number) => {
+            this.topInfoPanel?.updateBalance(balance);
+        });
+
+        this.waveManager.on("wave_progress", (data: {killed: number, total: number}) => {
+            this.topInfoPanel?.updateKilled(data.killed, data.total);
+        });
+
+        this.topInfoPanel?.updateBalance(this.economyService.getBalance());
 
         this.renderer.on("resize", this.updateLayout, this);
         this.updateLayout();

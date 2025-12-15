@@ -52,7 +52,7 @@ export class App {
         this.spriteService = new SpriteService();
         this.soundService = new SoundService();
         this.bitmapTextService = new BitmapTextService();
-        this.economyService = new EconomyService(1500);
+        this.economyService = new EconomyService();
         this.domEventHelper = new DomEventHelper();
 
         this.app.stage.eventMode = "static";
@@ -124,6 +124,7 @@ export class App {
             this.spriteService,
             this.domEventHelper,
             this.soundService,
+            this.economyService
         );
 
         this.uiManager = new UIManager(
@@ -134,6 +135,7 @@ export class App {
             this.spriteService,
             this.soundService,
             this.bitmapTextService,
+            this.waveManager,
             () => this.waveManager?.startNextWave()
         );
         this.uiManager.init(this.gameContainer);

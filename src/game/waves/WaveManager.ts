@@ -1,3 +1,4 @@
+import { utils } from "pixi.js";
 import { EntityManager } from "../EntityManager";
 import { type TEnemyConfig } from "../entities/Enemy";
 
@@ -7,23 +8,27 @@ export enum WaveState {
     WAITING = "waiting",
 }
 
-export class WaveManager {
+export class WaveManager extends utils.EventEmitter {
     private readonly entityManager: EntityManager;
     private currentWave: number = 0;
     private state: WaveState = WaveState.IDLE;
     private enemiesToSpawn: number = 0;
     private spawnTimer: number = 0;
-    private readonly spawnIntervalBase: number = 1.2;
+    private readonly spawnIntervalBase: number = 1.5;
     private spawnIntervalCurrent: number = 0;
     private timeToNextWave: number = 0;
-    private readonly timeBetweenWavesBuffer = 10;
+    private readonly timeBetweenWavesBuffer = 15;
+    private totalEnemiesInWave: number = 0;
+    private killedEnemiesInWave: number = 0;
 
     public onWaveChange?: (wave: number) => void;
     public onWaveTimerUpdate?: (timeLeft: number) => void;
     public onStateChange?: (state: WaveState) => void;
 
     constructor(entityManager: EntityManager) {
+        super();
         this.entityManager = entityManager;
+        this.entityManager.on("enemy_killed", () => this.onEnemyKilled());
     }
 
     public startNextWave() {
@@ -44,6 +49,11 @@ export class WaveManager {
         }
     }
 
+    public onEnemyKilled() {
+        this.killedEnemiesInWave++;
+        this.emitProgress();
+    }
+
     private initWave(waveIndex: number) {
         const spawnIntervalCoeff = 0.05;
         const firstSpawnCount = 5;
@@ -52,6 +62,9 @@ export class WaveManager {
         this.currentWave = waveIndex;
         this.state = WaveState.SPAWNING;
         this.enemiesToSpawn = firstSpawnCount + spawnEnemyCoeff;
+        this.totalEnemiesInWave = this.enemiesToSpawn;
+        this.killedEnemiesInWave = 0;
+        this.emitProgress();
         this.spawnIntervalCurrent = Math.max(0.8, this.spawnIntervalBase - (this.currentWave * spawnIntervalCoeff));
         this.spawnTimer = 0;
 
@@ -60,6 +73,13 @@ export class WaveManager {
 
         this.onWaveChange?.(this.currentWave);
         this.onStateChange?.(this.state);
+    }
+
+    private emitProgress() {
+        this.emit("wave_progress", {
+            killed: this.killedEnemiesInWave,
+            total: this.totalEnemiesInWave
+        });
     }
 
     private handleSpawningState(delta: number) {

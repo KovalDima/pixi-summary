@@ -1,7 +1,10 @@
-export class EconomyService {
+import { utils } from "pixi.js";
+
+export class EconomyService extends utils.EventEmitter {
     private balance: number;
 
-    constructor(initialBalance = 500) {
+    constructor(initialBalance = 600) {
+        super();
         this.balance = initialBalance;
     }
 
@@ -11,12 +14,13 @@ export class EconomyService {
 
     public addMoney(amount: number) {
         this.balance += amount;
-        console.log(this.balance);
+        this.emit("balance_changed", this.balance);
     }
 
     public spendMoney(amount: number) {
         if (this.balance >= amount) {
             this.balance -= amount;
+            this.emit("balance_changed", this.balance);
             return true;
         }
         return false;

@@ -11,6 +11,7 @@ import type { TTowerConfig } from "../towers/TowerTypes";
 import type { TBoosterConfig } from "../boosters/BoosterTypes";
 import type { TowerManager } from "../towers/TowerManager";
 import type { BoosterManager } from "../boosters/BoosterManager";
+import type { EconomyService } from "../../services/EconomyService";
 
 export enum PlaceableItemType {
     TOWER = "tower",
@@ -40,9 +41,11 @@ export class ObjectPlacementController {
     private readonly soundService: SoundService;
     private readonly domEventHelper: DomEventHelper;
     private readonly snappingService: SnappingService;
+    private readonly economyService: EconomyService;
 
     private ghostSprite: Sprite | null = null;
     private activeStrategy: IPlacementStrategy | null = null;
+    private currentItem: TPlaceableItem | null = null;
     private isValidPlacement: boolean = false;
 
     private readonly VALID_TINT = 0xFFFFFF;
@@ -59,7 +62,8 @@ export class ObjectPlacementController {
         boosterManager: BoosterManager,
         spriteService: SpriteService,
         domEventHelper: DomEventHelper,
-        soundService: SoundService
+        soundService: SoundService,
+        economyService: EconomyService
     ) {
         this.gameContainer = gameContainer;
         this.rootContainer = rootContainer;
@@ -68,11 +72,13 @@ export class ObjectPlacementController {
         this.spriteService = spriteService;
         this.soundService = soundService;
         this.domEventHelper = domEventHelper;
+        this.economyService = economyService;
         this.snappingService = new SnappingService();
     }
 
     public startPlacing(item: TPlaceableItem, globalPosition: IPointData) {
         this.cancelPlacing();
+        this.currentItem = item;
         this.activeStrategy = this.createStrategy(item);
 
         if (item.type === PlaceableItemType.TOWER) {
@@ -154,10 +160,18 @@ export class ObjectPlacementController {
 
         this.processMove(event.global);
 
-        if (this.isValidPlacement) {
-            const finalGamePos = this.gameContainer.toLocal(this.ghostSprite.position);
-            this.activeStrategy.place(finalGamePos);
-            this.cancelPlacing();
+        if (this.isValidPlacement && this.currentItem) {
+            const price = this.currentItem.config.price;
+            const isPurchaseSuccessful = this.economyService.spendMoney(price);
+
+            if (isPurchaseSuccessful) {
+                const finalGamePos = this.gameContainer.toLocal(this.ghostSprite.position);
+                this.activeStrategy.place(finalGamePos);
+                this.cancelPlacing();
+            } else {
+                this.soundService.play(AssetsConstants.SOUND_FAIL_BUILD);
+                console.log("Not enough money!");
+            }
         } else {
             this.soundService.play(AssetsConstants.SOUND_FAIL_BUILD);
         }
@@ -166,6 +180,7 @@ export class ObjectPlacementController {
     public cancelPlacing() {
         this.removeGhost();
         this.activeStrategy = null;
+        this.currentItem = null;
         this.isValidPlacement = false;
         this.towerManager.hideHighlights();
         this.boosterManager.hideHighlights();

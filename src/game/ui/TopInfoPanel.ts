@@ -35,6 +35,12 @@ export class TopInfoPanel extends Container {
         return this.background.height;
     }
 
+    public updateBalance(amount: number) {
+        if (this.balanceText) {
+            this.balanceText.text = `${amount}`;
+        }
+    }
+
     public updateWave(wave: number) {
         if (this.waveText) {
             this.waveText.text = `${wave}`;
@@ -44,15 +50,22 @@ export class TopInfoPanel extends Container {
     public updateNextWaveTimer(seconds: number) {
         if (this.nextWaveText) {
             if (seconds <= 0) {
-                this.nextWaveText.text = "0";
+                this.nextWaveText.text = "0s";
             } else {
                 this.nextWaveText.text = `${Math.floor(seconds)}s`;
             }
         }
     }
 
+    public updateKilled(killed: number, total: number) {
+        if (this.killedText) {
+            this.killedText.text = `${killed}l${total}`;
+        }
+    }
+
+    // TODO: remove magic values
     private initTexts(bitmapTextService: BitmapTextService) {
-        this.createGroup(bitmapTextService, "POINTS", -345, (text) => this.balanceText = text);
+        this.createGroup(bitmapTextService, "BALANCE", -345, (text) => this.balanceText = text);
         this.createGroup(bitmapTextService, "WAVE", -110, (text) => this.waveText = text);
         this.createGroup(bitmapTextService, "NEXT WAVE", 110, (text) => this.nextWaveText = text);
         this.createGroup(bitmapTextService, "KILLED", 345, (text) => this.killedText = text);
