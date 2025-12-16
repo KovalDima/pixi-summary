@@ -26,6 +26,7 @@ export const manifest = {
                 { alias: AssetsConstants.UI_ITEM_SLOT_ALIAS, src: "resources/ui/item_holder.png" },
                 { alias: AssetsConstants.UI_ITEMS_PANEL_ALIAS, src: "resources/ui/items_holder.png" },
                 { alias: AssetsConstants.UI_BTN_NEXT_WAVE_ALIAS, src: "resources/ui/btn_next_wave.png" },
+                { alias: AssetsConstants.COIN_ALIAS, src: "resources/effects/coin.png" },
             ]
         }
     ],

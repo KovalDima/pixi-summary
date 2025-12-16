@@ -3,7 +3,7 @@ import { utils } from "pixi.js";
 export class EconomyService extends utils.EventEmitter {
     private balance: number;
 
-    constructor(initialBalance = 8888888) {
+    constructor(initialBalance = 600) {
         super();
         this.balance = initialBalance;
     }

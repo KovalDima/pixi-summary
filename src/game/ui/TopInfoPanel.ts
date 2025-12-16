@@ -1,4 +1,4 @@
-import { Container, type Sprite, type BitmapText } from "pixi.js";
+import { Container, type Sprite, type BitmapText, type IPointData } from "pixi.js";
 import { AssetsConstants } from "../../constants/AssetsConstants";
 import { type SpriteService } from "../../services/SpriteService";
 import { type BitmapTextService } from "../../services/BitmapTextService";
@@ -61,6 +61,13 @@ export class TopInfoPanel extends Container {
         if (this.killedText) {
             this.killedText.text = `${killed}l${total}`;
         }
+    }
+
+    public getBalanceGlobalPosition() {
+        if (this.balanceText) {
+            return this.balanceText.getGlobalPosition();
+        }
+        return this.getGlobalPosition();
     }
 
     // TODO: remove magic values

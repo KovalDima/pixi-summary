@@ -6,7 +6,6 @@ import { type SpriteService } from "../services/SpriteService";
 import { PathfindingService } from "../core/pathfinding/PathfindingService";
 import { MapConfig } from "../configs/MapConfig";
 import { Enemy } from "./entities/Enemy";
-import type { EconomyService } from "../services/EconomyService";
 import type { TEnemyConfig } from "./entities/EnemyTypes";
 
 export type TFlameConfig = {
@@ -22,7 +21,6 @@ export class EntityManager extends utils.EventEmitter {
     private readonly animatedSpriteService: AnimatedSpriteService;
     private readonly spriteService: SpriteService;
     private pathfindingService: PathfindingService;
-    private readonly economyService: EconomyService;
     private enemies: Enemy[] = [];
     private occupiedNodes: Set<string> = new Set();
     private readonly onEnemyReachedFinish: (damage: number) => void;
@@ -31,14 +29,12 @@ export class EntityManager extends utils.EventEmitter {
         gameContainer: Container,
         animatedSpriteService: AnimatedSpriteService,
         spriteService: SpriteService,
-        economyService: EconomyService,
         onEnemyReachedFinish: (damage: number) => void
     ) {
         super();
         this.gameContainer = gameContainer;
         this.animatedSpriteService = animatedSpriteService;
         this.spriteService = spriteService;
-        this.economyService = economyService;
         this.onEnemyReachedFinish = onEnemyReachedFinish;
         this.pathfindingService = new PathfindingService(MapConfig.getNodes(), MapConfig.getEdges());
     }
@@ -85,7 +81,10 @@ export class EntityManager extends utils.EventEmitter {
                 this.removeEnemy(enemy);
             },
             () => {
-                this.economyService.addMoney(enemy.reward);
+                this.emit("enemy_killed_at", {
+                    position: { x: enemy.x, y: enemy.y },
+                    reward: enemy.reward
+                });
                 this.emit("enemy_killed");
                 this.removeEnemy(enemy);
             }

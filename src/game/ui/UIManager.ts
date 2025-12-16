@@ -88,6 +88,13 @@ export class UIManager {
         }
     }
 
+    public getBalancePosition() {
+        if (this.topInfoPanel) {
+            return this.topInfoPanel.getBalanceGlobalPosition();
+        }
+        return { x: 0, y: 0 };
+    }
+
     private createTopPanel() {
         this.topInfoPanel = new TopInfoPanel(this.spriteService, this.bitmapTextService);
         this.uiLayer.addChild(this.topInfoPanel);

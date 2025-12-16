@@ -21,6 +21,8 @@ import { MapConfig } from "./configs/MapConfig";
 import { GameOverPopup } from "./game/ui/GameOverPopup";
 import { BitmapTextService } from "./services/BitmapTextService";
 import { WaveManager } from "./game/waves/WaveManager";
+import { ParticleService } from "./services/ParticleService";
+import { DropManager } from "./game/effects/DropManager";
 
 export class App {
     public readonly app: Application;
@@ -31,6 +33,8 @@ export class App {
     private readonly soundService: SoundService;
     private readonly economyService: EconomyService;
     private readonly bitmapTextService: BitmapTextService;
+    private particleService: ParticleService;
+    private dropManager: DropManager | null = null;
     public gameContainer: ResponsiveContainer | null = null;
     public magicGate: MagicGate | null = null;
     // TODO:
@@ -54,6 +58,7 @@ export class App {
         this.bitmapTextService = new BitmapTextService();
         this.economyService = new EconomyService();
         this.domEventHelper = new DomEventHelper();
+        this.particleService = new ParticleService();
 
         this.app.stage.eventMode = "static";
 
@@ -91,7 +96,6 @@ export class App {
             this.gameContainer,
             this.animatedSpriteService,
             this.spriteService,
-            this.economyService,
             (damage) => this.onEnemyReachedFinish(damage)
         );
 
@@ -140,15 +144,31 @@ export class App {
         );
         this.uiManager.init(this.gameContainer);
 
-        // TODO: change (observer?)
+        this.dropManager = new DropManager(
+            this.gameContainer,
+            this.sceneLayerManager.uiLayer,
+            this.spriteService,
+            this.particleService,
+            () => this.uiManager?.getBalancePosition() ?? { x: 0, y: 0 }
+        );
+
         this.waveManager.onWaveChange = (wave) => {
             this.uiManager?.updateWaveInfo(wave, 0);
         };
 
-        // TODO: change (observer?)
         this.waveManager.onWaveTimerUpdate = (timeLeft) => {
             this.uiManager?.updateWaveInfo(this.waveManager!["currentWave"], timeLeft);
         };
+
+        this.entityManager.on("enemy_killed_at", (data: { position: {x: number, y: number}, reward: number }) => {
+            if (this.dropManager) {
+                this.dropManager.spawnCoin(data.position, () => {
+                    this.economyService.addMoney(data.reward);
+                });
+            } else {
+                this.economyService.addMoney(data.reward);
+            }
+        });
 
         this.startGameLoop();
     }
@@ -208,6 +228,8 @@ export class App {
             if (this.towerManager && this.entityManager) {
                 this.towerManager.update(delta, this.entityManager.getEnemies());
             }
+
+            this.particleService.update(delta);
         });
     }
 
