@@ -1,6 +1,7 @@
 import { utils } from "pixi.js";
 import { EntityManager } from "../EntityManager";
-import { type TEnemyConfig } from "../entities/Enemy";
+import { EnemyType, type TEnemyConfig } from "../entities/EnemyTypes";
+import { EnemyRegistry } from "../entities/EnemyRegistry";
 
 export enum WaveState {
     IDLE = "idle",
@@ -12,7 +13,7 @@ export class WaveManager extends utils.EventEmitter {
     private readonly entityManager: EntityManager;
     private currentWave: number = 0;
     private state: WaveState = WaveState.IDLE;
-    private enemiesToSpawn: number = 0;
+    private spawnQueue: EnemyType[] = [];
     private spawnTimer: number = 0;
     private readonly spawnIntervalBase: number = 1.5;
     private spawnIntervalCurrent: number = 0;
@@ -54,21 +55,44 @@ export class WaveManager extends utils.EventEmitter {
         this.emitProgress();
     }
 
+    public getTimeToNextWave() {
+        return this.timeToNextWave;
+    }
+
     private initWave(waveIndex: number) {
         const spawnIntervalCoeff = 0.05;
         const firstSpawnCount = 5;
         const spawnEnemyCoeff = this.currentWave * 2;
+        const totalCount = firstSpawnCount + spawnEnemyCoeff;
+        let powerfulCount = 0;
 
         this.currentWave = waveIndex;
         this.state = WaveState.SPAWNING;
-        this.enemiesToSpawn = firstSpawnCount + spawnEnemyCoeff;
-        this.totalEnemiesInWave = this.enemiesToSpawn;
+        this.totalEnemiesInWave = totalCount;
         this.killedEnemiesInWave = 0;
+        this.spawnQueue = [];
+
+        if (this.currentWave >= 3) {
+            powerfulCount = Math.floor(Math.random() * 2) + 1;
+        }
+
+        const regularCount = totalCount - powerfulCount;
+
+        for (let i = 0; i < regularCount; i++) {
+            this.spawnQueue.push(EnemyType.REGULAR);
+        }
+
+        for (let i = 0; i < powerfulCount; i++) {
+            this.spawnQueue.push(EnemyType.POWERFUL);
+        }
+
+        this.spawnQueue.sort(() => Math.random() - 0.5);
+
         this.emitProgress();
         this.spawnIntervalCurrent = Math.max(0.8, this.spawnIntervalBase - (this.currentWave * spawnIntervalCoeff));
         this.spawnTimer = 0;
 
-        const totalSpawnTime = this.enemiesToSpawn * this.spawnIntervalCurrent;
+        const totalSpawnTime = this.totalEnemiesInWave * this.spawnIntervalCurrent;
         this.timeToNextWave = totalSpawnTime + this.timeBetweenWavesBuffer;
 
         this.onWaveChange?.(this.currentWave);
@@ -86,13 +110,13 @@ export class WaveManager extends utils.EventEmitter {
         this.updateWaveTimer(delta);
 
         this.spawnTimer -= delta;
-        if (this.spawnTimer <= 0 && this.enemiesToSpawn > 0) {
+
+        if (this.spawnTimer <= 0 && this.spawnQueue.length > 0) {
             this.spawnEnemy();
-            this.enemiesToSpawn--;
             this.spawnTimer = this.spawnIntervalCurrent;
         }
 
-        if (this.enemiesToSpawn <= 0) {
+        if (this.spawnQueue.length <= 0) {
             this.state = WaveState.WAITING;
             this.onStateChange?.(this.state);
         }
@@ -124,20 +148,22 @@ export class WaveManager extends utils.EventEmitter {
     }
 
     private spawnEnemy() {
-        // TODO: change
-        // HP: База 15 + 20% кожну хвилю
-        const hpMultiplier = Math.pow(1.2, this.currentWave - 1);
-        const hp = Math.floor(15 * hpMultiplier);
+        const enemyType = this.spawnQueue.shift();
+        if (!enemyType) {
+            return;
+        }
 
-        // TODO: change
-        // Reward: 10 + 1
-        const reward = 10 + this.currentWave;
+        const typeConfig = EnemyRegistry.getTypeConfig(enemyType);
+        const baseHp = Math.floor(15 * Math.pow(1.1, this.currentWave));
+        const baseReward = 10 + this.currentWave * 1.5;
+        const finalHp = Math.floor(baseHp * typeConfig.hpMultiplier);
+        const finalReward = Math.floor(baseReward * typeConfig.rewardMultiplier);
 
         const config: TEnemyConfig = {
-            hp,
-            speed: 2,
-            reward,
-            damageToPlayer: 1
+            ...typeConfig,
+            hp: finalHp,
+            reward: finalReward,
+            damageToPlayer: 1,
         };
 
         this.entityManager.spawnWaveEnemy(config);

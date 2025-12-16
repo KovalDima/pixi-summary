@@ -13,7 +13,7 @@ import { ItemsPanel } from "./ItemsPanel";
 import { NextWaveButton } from "./NextWaveButton";
 import { ItemSlot } from "./ItemSlot";
 import type { ResponsiveContainer } from "../../view/ResponsiveContainer";
-import { WaveManager } from "../waves/WaveManager";
+import { WaveManager, WaveState } from "../waves/WaveManager";
 
 export class UIManager {
     private readonly uiLayer: Container;
@@ -62,6 +62,10 @@ export class UIManager {
         this.createTowersPanel();
         this.createBoostersPanel();
         this.createNextWaveButton();
+
+        this.waveManager.onStateChange = (state: WaveState) => {
+            this.nextWaveButton?.setEnabled(state !== WaveState.SPAWNING);
+        };
 
         this.economyService.on("balance_changed", (balance: number) => {
             this.topInfoPanel?.updateBalance(balance);
@@ -146,10 +150,18 @@ export class UIManager {
     }
 
     private createNextWaveButton() {
-        this.nextWaveButton = new NextWaveButton(this.spriteService, () => {
-            this.soundService.play(AssetsConstants.SOUND_CLICK);
-            this.onNextWaveClick();
-        });
+        this.nextWaveButton = new NextWaveButton(
+            this.spriteService,
+            this.bitmapTextService,
+            () => {
+                if (this.waveManager.getTimeToNextWave() > 0) {
+                    this.economyService.addMoney(30);
+                    this.nextWaveButton?.showBonusLabel();
+                }
+                this.soundService.play(AssetsConstants.SOUND_CLICK);
+                this.onNextWaveClick();
+            }
+        );
         this.uiLayer.addChild(this.nextWaveButton);
     }
 

@@ -5,8 +5,9 @@ import { AnimationConstants } from "../constants/AnimationConstants";
 import { type SpriteService } from "../services/SpriteService";
 import { PathfindingService } from "../core/pathfinding/PathfindingService";
 import { MapConfig } from "../configs/MapConfig";
-import { Enemy, type TEnemyConfig } from "./entities/Enemy";
+import { Enemy } from "./entities/Enemy";
 import type { EconomyService } from "../services/EconomyService";
+import type { TEnemyConfig } from "./entities/EnemyTypes";
 
 export type TFlameConfig = {
     position: IPointData,

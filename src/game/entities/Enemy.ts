@@ -1,19 +1,14 @@
 import { Sprite, Container, type IPointData } from "pixi.js";
 import { PathNodeType, type TPathNode } from "../../core/pathfinding/PathfindingTypes";
-import { AssetsConstants } from "../../constants/AssetsConstants";
 import { SpriteService } from "../../services/SpriteService";
 import { DepthCalculator } from "../../utils/DepthCalculator";
 import { EffectUtils } from "../../utils/EffectUtils";
-
-export type TEnemyConfig = {
-    hp: number;
-    speed: number;
-    reward: number;
-    damageToPlayer: number;
-}
+import { HealthBar } from "../ui/HealthBar";
+import type { TEnemyConfig } from "./EnemyTypes";
 
 export class Enemy extends Container {
     private readonly sprite: Sprite;
+    private readonly healthBar: HealthBar | null = null;
     private path: TPathNode[];
     private currentTargetIndex: number = 0;
     private currentTargetPoint: IPointData | null = null;
@@ -24,6 +19,8 @@ export class Enemy extends Container {
     private currentHp: number;
     public readonly reward: number;
     public readonly damageToPlayer: number;
+    private readonly scaleMultiplier: number;
+    private readonly ignoreSlowdown: boolean;
 
     private readonly reachedFinishCallback: () => void;
     private readonly killedCallback: () => void;
@@ -43,12 +40,22 @@ export class Enemy extends Container {
         this.currentSpeed = this.baseSpeed;
         this.reward = config.reward;
         this.damageToPlayer = config.damageToPlayer;
+        this.scaleMultiplier = config.scaleMultiplier;
+        this.ignoreSlowdown = config.ignoreSlowdown;
 
         this.reachedFinishCallback = onReachedFinish;
         this.killedCallback = onKilled;
 
-        this.sprite = spriteService.createSprite(AssetsConstants.MONSTER_TEXTURE_ALIAS);
+        this.sprite = spriteService.createSprite(config.textureAlias);
         this.addChild(this.sprite);
+
+        if (config.showHealthBar) {
+            const barWidth = 140;
+            const barHeight = 14;
+            this.healthBar = new HealthBar(this.maxHp, barWidth, barHeight);
+            this.healthBar.position.set(-barWidth / 2, -barWidth / 1.5);
+            this.addChild(this.healthBar);
+        }
 
         if (this.path.length > 0) {
             this.position.copyFrom(this.path[0].position);
@@ -79,13 +86,14 @@ export class Enemy extends Container {
 
         const targetNode = this.path[this.currentTargetIndex];
 
-        if (targetNode.type === PathNodeType.DETOUR) {
+        if (targetNode.type === PathNodeType.DETOUR && !this.ignoreSlowdown) {
             this.currentSpeed = this.baseSpeed * 0.4;
         } else {
             this.currentSpeed = this.baseSpeed;
         }
 
         const targetPosition = this.currentTargetPoint;
+        // TODO: reuse
         const distanceX = targetPosition.x - this.x;
         const distanceY = targetPosition.y - this.y;
         const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
@@ -117,6 +125,7 @@ export class Enemy extends Container {
 
         this.currentHp -= amount;
         EffectUtils.blinkRed(this.sprite);
+        this.healthBar?.update(this.currentHp);
 
         if (this.currentHp <= 0) {
             this.die();
@@ -142,7 +151,7 @@ export class Enemy extends Container {
     private updateScaleAndDepth() {
         // TODO:
         //  getTowerScale rename to "somethingScale"
-        const scale = DepthCalculator.getTowerScale(this.y);
+        const scale = DepthCalculator.getTowerScale(this.y) * this.scaleMultiplier;
         this.scale.set(scale);
         this.zIndex = this.y;
     }

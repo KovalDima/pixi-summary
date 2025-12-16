@@ -106,6 +106,7 @@ export class TowerManager {
                 tower = this.animatedSpriteService.createAnimation(config.assetAlias, config.animationName);
                 tower.loop = false;
                 tower.animationSpeed = 0.03;
+                this.soundService.stop(AssetsConstants.SOUND_BUILD_PROCESS);
                 this.soundService.play(AssetsConstants.SOUND_BUILD_PROCESS);
                 break;
             default:

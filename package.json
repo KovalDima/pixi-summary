@@ -12,6 +12,7 @@
   "license": "ISC",
   "types": "./index.d.ts",
   "dependencies": {
+    "gsap": "^3.14.2",
     "howler": "^2.2.4",
     "pixi.js": "^7.4.3"
   },

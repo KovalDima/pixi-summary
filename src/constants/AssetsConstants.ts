@@ -26,8 +26,9 @@ export class AssetsConstants {
 
     public static readonly FONT_VCR_ALIAS = "VCR_OSD_MONO";
 
-    public static readonly SYMBOLS_ATLAS_ALIAS = "symbols";
-    public static readonly MONSTER_TEXTURE_ALIAS = "monster.png";
+    public static readonly SYMBOLS_ATLAS_ALIAS = "textures";
+    public static readonly MONSTER_TEXTURE_ALIAS = "monster-regular.png";
+    public static readonly MONSTER_POWERFUL_TEXTURE_ALIAS = "monster-powerful.png";
 
     public static readonly MAGIC_GATE_ALIAS = "magic_gate";
 
