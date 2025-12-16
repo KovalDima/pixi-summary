@@ -7,6 +7,7 @@ import { PathfindingService } from "../core/pathfinding/PathfindingService";
 import { MapConfig } from "../configs/MapConfig";
 import { Enemy } from "./entities/Enemy";
 import type { TEnemyConfig } from "./entities/EnemyTypes";
+import { ObjectPool } from "../core/pool/ObjectPool";
 
 export type TFlameConfig = {
     position: IPointData,
@@ -19,24 +20,23 @@ export type TFlameConfig = {
 export class EntityManager extends utils.EventEmitter {
     private readonly gameContainer: Container;
     private readonly animatedSpriteService: AnimatedSpriteService;
-    private readonly spriteService: SpriteService;
     private pathfindingService: PathfindingService;
     private enemies: Enemy[] = [];
     private occupiedNodes: Set<string> = new Set();
     private readonly onEnemyReachedFinish: (damage: number) => void;
+    private enemyPool: ObjectPool<Enemy>;
 
     constructor(
         gameContainer: Container,
         animatedSpriteService: AnimatedSpriteService,
-        spriteService: SpriteService,
         onEnemyReachedFinish: (damage: number) => void
     ) {
         super();
         this.gameContainer = gameContainer;
         this.animatedSpriteService = animatedSpriteService;
-        this.spriteService = spriteService;
         this.onEnemyReachedFinish = onEnemyReachedFinish;
         this.pathfindingService = new PathfindingService(MapConfig.getNodes(), MapConfig.getEdges());
+        this.enemyPool = new ObjectPool<Enemy>(() => new Enemy());
     }
 
     public getEnemies() {
@@ -72,8 +72,7 @@ export class EntityManager extends utils.EventEmitter {
 
         const path = this.pathfindingService.findPath(startId, endId);
 
-        const enemy = new Enemy(
-            this.spriteService,
+        const enemy = this.enemyPool.get(
             path,
             config,
             () => {
@@ -118,7 +117,8 @@ export class EntityManager extends utils.EventEmitter {
         const index = this.enemies.indexOf(enemy);
         if (index !== -1) {
             this.enemies.splice(index, 1);
-            enemy.destroy();
+            this.gameContainer.removeChild(enemy);
+            this.enemyPool.put(enemy);
         }
     }
 }

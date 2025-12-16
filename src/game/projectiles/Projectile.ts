@@ -1,37 +1,44 @@
-import { Container, Sprite, type IPointData } from "pixi.js";
+import { Container, Sprite, Texture, type IPointData } from "pixi.js";
 import type { Enemy } from "../entities/Enemy";
+import type { IPoolable } from "../../core/pool/IPoolable";
 
-export class Projectile extends Container {
-    private readonly target: Enemy;
-    private readonly speed: number;
-    private readonly damage: number;
+export class Projectile extends Container implements IPoolable {
+    private target: Enemy | null = null;
+    private speed = 0;
+    private damage = 0;
     private readonly view: Sprite;
-    private readonly type: "linear" | "arc";
-    private readonly startPosition: IPointData;
-    private readonly initialDistance: number;
+    private type: "linear" | "arc" = "linear";
+    private startPosition: IPointData = { x: 0, y: 0 };
+    private initialDistance = 0;
     private readonly ARC_HEIGHT = 80;
     private readonly ROTATION_SPEED = 0.2;
     private readonly PARABOLA_COEFF = 4;
     private readonly MAX_PROGRESS = 1;
 
-    constructor(
+    constructor() {
+        super();
+        this.view = new Sprite();
+        this.view.anchor.set(0.5);
+        this.addChild(this.view);
+    }
+
+    public reset(
         startPosition: IPointData,
         target: Enemy,
         damage: number,
         speed: number,
-        view: Sprite,
+        texture: Texture,
         type: "linear" | "arc"
     ) {
-        super();
         this.position.copyFrom(startPosition);
+        this.startPosition = { x: startPosition.x, y: startPosition.y };
         this.target = target;
         this.damage = damage;
         this.speed = speed;
-        this.view = view;
         this.type = type;
-        this.startPosition = { x: startPosition.x, y: startPosition.y };
-
-        this.addChild(this.view);
+        this.view.texture = texture;
+        this.view.rotation = 0;
+        this.view.y = 0;
 
         // TODO: reuse it
         const distanceX = this.target.x - this.startPosition.x;
@@ -39,9 +46,12 @@ export class Projectile extends Container {
         this.initialDistance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
     }
 
+    public clean() {
+        this.target = null;
+    }
+
     public update(delta: number) {
-        if (this.target.destroyed) {
-            this.destroy();
+        if (!this.target || this.target.destroyed) {
             return true;
         }
 
@@ -75,9 +85,8 @@ export class Projectile extends Container {
     }
 
     private hitTarget() {
-        if (!this.target.destroyed) {
+        if (this.target && !this.target.destroyed) {
             this.target.takeDamage(this.damage);
         }
-        this.destroy();
     }
 }

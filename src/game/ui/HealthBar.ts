@@ -3,7 +3,7 @@ import { Config } from "../../Config";
 
 export class HealthBar extends Container {
     private readonly graphics: Graphics;
-    private readonly maxHp: number;
+    private maxHp: number;
     private readonly barWidth: number;
     private readonly barHeight: number;
 
@@ -15,6 +15,11 @@ export class HealthBar extends Container {
         this.graphics = new Graphics();
 
         this.addChild(this.graphics);
+        this.update(this.maxHp);
+    }
+
+    public reset(maxHp: number) {
+        this.maxHp = maxHp;
         this.update(this.maxHp);
     }
 

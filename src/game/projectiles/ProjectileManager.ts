@@ -1,17 +1,19 @@
-import { Container, type IPointData } from "pixi.js";
+import { Container, type IPointData, Assets } from "pixi.js";
 import { Projectile } from "./Projectile";
 import type { Enemy } from "../entities/Enemy";
-import type { SpriteService } from "../../services/SpriteService";
 import type { TTowerConfig } from "../towers/TowerTypes";
+import { ObjectPool } from "../../core/pool/ObjectPool";
 
 export class ProjectileManager {
     private readonly gameContainer: Container;
-    private readonly spriteService: SpriteService;
     private projectiles: Projectile[] = [];
+    private projectilePool: ObjectPool<Projectile>;
 
-    constructor(gameContainer: Container, spriteService: SpriteService) {
+    constructor(gameContainer: Container) {
         this.gameContainer = gameContainer;
-        this.spriteService = spriteService;
+        this.projectilePool = new ObjectPool<Projectile>(() => {
+            return new Projectile();
+        });
     }
 
     public createProjectile(
@@ -19,16 +21,22 @@ export class ProjectileManager {
         target: Enemy,
         config: TTowerConfig
     ) {
-        const view = this.spriteService.createSprite(config.projectileAlias);
-        view.scale.set(0.5);
-        const projectile = new Projectile(
+        const texture = Assets.get(config.projectileAlias);
+
+        if (!texture) {
+            throw new Error(`Texture not found for projectile: ${config.projectileAlias}`);
+        }
+
+        const projectile = this.projectilePool.get(
             startPosition,
             target,
             config.damage,
             config.projectileSpeed,
-            view,
+            texture,
             config.projectileType
         );
+
+        projectile.scale.set(0.5);
         this.projectiles.push(projectile);
         this.gameContainer.addChild(projectile);
     }
@@ -36,7 +44,10 @@ export class ProjectileManager {
     public update(delta: number) {
         this.projectiles.forEach((projectile, index) => {
             const isFinished = projectile.update(delta);
+
             if (isFinished) {
+                this.gameContainer.removeChild(projectile);
+                this.projectilePool.put(projectile);
                 this.projectiles.splice(index, 1);
             }
         });

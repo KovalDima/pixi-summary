@@ -1,6 +1,7 @@
 import { Container, type IPointData } from "pixi.js";
 import { SpriteService } from "../../services/SpriteService";
 import { ParticleService } from "../../services/ParticleService";
+import { ObjectPool } from "../../core/pool/ObjectPool";
 import { Coin } from "./Coin";
 import gsap from "gsap";
 
@@ -10,6 +11,7 @@ export class DropManager {
     private readonly spriteService: SpriteService;
     private readonly particleService: ParticleService;
     private readonly getTargetPosition: () => IPointData;
+    private coinPool: ObjectPool<Coin>;
 
     constructor(
         gameContainer: Container,
@@ -23,12 +25,15 @@ export class DropManager {
         this.spriteService = spriteService;
         this.particleService = particleService;
         this.getTargetPosition = getTargetPosition;
+        this.coinPool = new ObjectPool<Coin>(() => {
+            return new Coin(this.spriteService);
+        });
     }
 
     public spawnCoin(position: IPointData, onComplete: () => void) {
-        const coin = new Coin(this.spriteService);
+        const coin = this.coinPool.get(position);
 
-        coin.position.copyFrom(position);
+        // coin.position.copyFrom(position);
         coin.zIndex = position.y + 1;
         this.gameContainer.addChild(coin);
         this.gameContainer.sortChildren();
@@ -91,7 +96,7 @@ export class DropManager {
 
                 emitter.emit = false;
                 setTimeout(() => this.particleService.removeEmitter(emitter), removeEmitterDelay);
-                coin.destroy();
+                this.coinPool.put(coin);
                 onComplete();
             }
         });

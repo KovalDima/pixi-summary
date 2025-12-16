@@ -90,12 +90,11 @@ export class App {
 
         const highlightService = new HighlightService(this.gameContainer);
 
-        this.projectileManager = new ProjectileManager(this.gameContainer, this.spriteService);
+        this.projectileManager = new ProjectileManager(this.gameContainer);
 
         this.entityManager = new EntityManager(
             this.gameContainer,
             this.animatedSpriteService,
-            this.spriteService,
             (damage) => this.onEnemyReachedFinish(damage)
         );
 

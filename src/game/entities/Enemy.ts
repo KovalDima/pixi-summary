@@ -1,38 +1,52 @@
-import { Sprite, Container, type IPointData } from "pixi.js";
+import { Sprite, Container, type IPointData, Assets } from "pixi.js";
 import { PathNodeType, type TPathNode } from "../../core/pathfinding/PathfindingTypes";
-import { SpriteService } from "../../services/SpriteService";
 import { DepthCalculator } from "../../utils/DepthCalculator";
 import { EffectUtils } from "../../utils/EffectUtils";
 import { HealthBar } from "../ui/HealthBar";
 import type { TEnemyConfig } from "./EnemyTypes";
+import type { IPoolable } from "../../core/pool/IPoolable";
 
-export class Enemy extends Container {
+export class Enemy extends Container implements IPoolable{
     private readonly sprite: Sprite;
-    private readonly healthBar: HealthBar | null = null;
-    private path: TPathNode[];
+    private readonly healthBar: HealthBar;
+    private path: TPathNode[] = [];
     private currentTargetIndex: number = 0;
     private currentTargetPoint: IPointData | null = null;
     private readonly randomOffsetRange = 15;
-    private readonly baseSpeed: number;
-    private currentSpeed: number;
-    private readonly maxHp: number;
-    private currentHp: number;
-    public readonly reward: number;
-    public readonly damageToPlayer: number;
-    private readonly scaleMultiplier: number;
-    private readonly ignoreSlowdown: boolean;
+    private baseSpeed: number = 0;
+    private currentSpeed: number = 0;
+    private maxHp: number = 0;
+    private currentHp: number = 0;
+    public reward: number = 0;
+    public damageToPlayer: number = 0;
+    private scaleMultiplier: number = 1;
+    private ignoreSlowdown: boolean = false;
+    public active: boolean = false;
 
-    private readonly reachedFinishCallback: () => void;
-    private readonly killedCallback: () => void;
+    private reachedFinishCallback: (() => void) | null = null;
+    private killedCallback: (() => void) | null = null;
 
-    constructor(
-        spriteService: SpriteService,
+    constructor() {
+        super();
+        this.sprite = new Sprite();
+        this.sprite.anchor.set(0.5);
+        this.addChild(this.sprite);
+
+        // TODO: not every enemy has a healthBar
+        const barWidth = 140;
+        const barHeight = 14;
+        this.healthBar = new HealthBar(100, barWidth, barHeight);
+        this.healthBar.position.set(-barWidth / 2, -barWidth / 1.5);
+        this.addChild(this.healthBar);
+    }
+
+    public reset(
         path: TPathNode[],
         config: TEnemyConfig,
         onReachedFinish: () => void,
         onKilled: () => void
     ) {
-        super();
+        this.active = true;
         this.path = path;
         this.maxHp = config.hp;
         this.currentHp = this.maxHp;
@@ -46,16 +60,20 @@ export class Enemy extends Container {
         this.reachedFinishCallback = onReachedFinish;
         this.killedCallback = onKilled;
 
-        this.sprite = spriteService.createSprite(config.textureAlias);
-        this.addChild(this.sprite);
+        const texture = Assets.get(config.textureAlias);
+
+        if (texture) {
+            this.sprite.texture = texture;
+        }
+
+        this.healthBar.visible = config.showHealthBar;
 
         if (config.showHealthBar) {
-            const barWidth = 140;
-            const barHeight = 14;
-            this.healthBar = new HealthBar(this.maxHp, barWidth, barHeight);
-            this.healthBar.position.set(-barWidth / 2, -barWidth / 1.5);
-            this.addChild(this.healthBar);
+            this.healthBar.reset(this.maxHp);
         }
+
+        this.sprite.tint = 0xFFFFFF;
+        this.alpha = 1;
 
         if (this.path.length > 0) {
             this.position.copyFrom(this.path[0].position);
@@ -64,6 +82,13 @@ export class Enemy extends Container {
         }
 
         this.updateScaleAndDepth();
+    }
+
+    public clean() {
+        this.active = false;
+        this.reachedFinishCallback = null;
+        this.killedCallback = null;
+        this.path = [];
     }
 
     public getCurrentTargetNodeId() {
@@ -80,7 +105,7 @@ export class Enemy extends Container {
     }
 
     public update(delta: number) {
-        if (!this.currentTargetPoint) {
+        if (!this.active || !this.currentTargetPoint) {
             return;
         }
 
@@ -105,7 +130,7 @@ export class Enemy extends Container {
             this.currentTargetIndex++;
 
             if (this.currentTargetIndex >= this.path.length) {
-                this.reachedFinishCallback();
+                this.reachedFinishCallback?.();
                 return;
             }
 
@@ -128,14 +153,8 @@ export class Enemy extends Container {
         this.healthBar?.update(this.currentHp);
 
         if (this.currentHp <= 0) {
-            this.die();
+            this.killedCallback?.();
         }
-    }
-
-    private die() {
-        this.killedCallback();
-        // death/coin animation ??
-        this.destroy();
     }
 
     private setNextTargetPoint() {
