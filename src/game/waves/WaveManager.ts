@@ -18,7 +18,7 @@ export class WaveManager extends utils.EventEmitter {
     private readonly spawnIntervalBase: number = 1.5;
     private spawnIntervalCurrent: number = 0;
     private timeToNextWave: number = 0;
-    private readonly timeBetweenWavesBuffer = 15;
+    private readonly timeBetweenWavesBuffer = 30;
     private totalEnemiesInWave: number = 0;
     private killedEnemiesInWave: number = 0;
 
@@ -62,7 +62,7 @@ export class WaveManager extends utils.EventEmitter {
     private initWave(waveIndex: number) {
         const spawnIntervalCoeff = 0.05;
         const firstSpawnCount = 5;
-        const spawnEnemyCoeff = this.currentWave * 2;
+        const spawnEnemyCoeff = Math.floor(this.currentWave * 1.5);
         const totalCount = firstSpawnCount + spawnEnemyCoeff;
         let powerfulCount = 0;
 
@@ -72,7 +72,7 @@ export class WaveManager extends utils.EventEmitter {
         this.killedEnemiesInWave = 0;
         this.spawnQueue = [];
 
-        if (this.currentWave >= 3) {
+        if (this.currentWave >= 5) {
             powerfulCount = Math.floor(Math.random() * 2) + 1;
         }
 
@@ -92,8 +92,7 @@ export class WaveManager extends utils.EventEmitter {
         this.spawnIntervalCurrent = Math.max(0.8, this.spawnIntervalBase - (this.currentWave * spawnIntervalCoeff));
         this.spawnTimer = 0;
 
-        const totalSpawnTime = this.totalEnemiesInWave * this.spawnIntervalCurrent;
-        this.timeToNextWave = totalSpawnTime + this.timeBetweenWavesBuffer;
+        this.timeToNextWave = this.totalEnemiesInWave * 1.5 + this.timeBetweenWavesBuffer;
 
         this.onWaveChange?.(this.currentWave);
         this.onStateChange?.(this.state);
@@ -154,8 +153,8 @@ export class WaveManager extends utils.EventEmitter {
         }
 
         const typeConfig = EnemyRegistry.getTypeConfig(enemyType);
-        const baseHp = Math.floor(15 * Math.pow(1.1, this.currentWave));
-        const baseReward = 10 + this.currentWave * 1.5;
+        const baseHp = Math.floor(12 * Math.pow(1.2, this.currentWave));
+        const baseReward = 10 + Math.floor(this.currentWave / 2);
         const finalHp = Math.floor(baseHp * typeConfig.hpMultiplier);
         const finalReward = Math.floor(baseReward * typeConfig.rewardMultiplier);
 

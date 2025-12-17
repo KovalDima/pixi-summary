@@ -8,8 +8,8 @@ export class EnemyRegistry {
             {
                 type: EnemyType.REGULAR,
                 textureAlias: AssetsConstants.MONSTER_TEXTURE_ALIAS,
-                speed: 2,
-                scaleMultiplier: 1.75,
+                speed: 1.5,
+                scaleMultiplier: 1.8,
                 hpMultiplier: 1,
                 rewardMultiplier: 1,
                 ignoreSlowdown: false,
@@ -21,10 +21,10 @@ export class EnemyRegistry {
             {
                 type: EnemyType.POWERFUL,
                 textureAlias: AssetsConstants.MONSTER_POWERFUL_TEXTURE_ALIAS,
-                speed: 2,
+                speed: 1.1,
                 scaleMultiplier: 2.2,
-                hpMultiplier: 2,
-                rewardMultiplier: 3,
+                hpMultiplier: 2.5,
+                rewardMultiplier: 2,
                 ignoreSlowdown: true,
                 showHealthBar: true,
             }

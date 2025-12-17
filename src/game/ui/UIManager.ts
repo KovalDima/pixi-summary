@@ -162,7 +162,7 @@ export class UIManager {
             this.bitmapTextService,
             () => {
                 if (this.waveManager.getTimeToNextWave() > 0) {
-                    this.economyService.addMoney(30);
+                    this.economyService.addMoney(50);
                     this.nextWaveButton?.showBonusLabel();
                 }
                 this.soundService.play(AssetsConstants.SOUND_CLICK);

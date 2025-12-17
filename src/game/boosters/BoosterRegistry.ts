@@ -8,7 +8,7 @@ export class BoosterRegistry {
             {
                 type: BoosterType.ROADBLOCK,
                 iconAlias: AssetsConstants.ROADBLOCK_BOOSTER_ALIAS,
-                price: 50,
+                price: 150,
             }
         ],
     ]);

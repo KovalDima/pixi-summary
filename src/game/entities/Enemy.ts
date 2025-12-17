@@ -112,7 +112,7 @@ export class Enemy extends Container implements IPoolable{
         const targetNode = this.path[this.currentTargetIndex];
 
         if (targetNode.type === PathNodeType.DETOUR && !this.ignoreSlowdown) {
-            this.currentSpeed = this.baseSpeed * 0.4;
+            this.currentSpeed = this.baseSpeed * 0.3;
         } else {
             this.currentSpeed = this.baseSpeed;
         }
