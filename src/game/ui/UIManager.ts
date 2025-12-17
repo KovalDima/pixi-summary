@@ -1,4 +1,4 @@
-import { Container, type IRenderer } from "pixi.js";
+import { Container, type IRenderer, type Sprite } from "pixi.js";
 import { GameConstants } from "../../constants/GameConstants";
 import { TowerRegistry } from "../towers/TowerRegistry";
 import { AssetsConstants } from "../../constants/AssetsConstants";
@@ -29,6 +29,7 @@ export class UIManager {
     private towersPanel: ItemsPanel | null = null;
     private boostersPanel: ItemsPanel | null = null;
     private nextWaveButton: NextWaveButton | null = null;
+    private muteButton: Sprite | null = null;
     private gameContainer: ResponsiveContainer | null = null;
 
     private readonly onNextWaveClick: () => void;
@@ -62,6 +63,7 @@ export class UIManager {
         this.createTowersPanel();
         this.createBoostersPanel();
         this.createNextWaveButton();
+        this.createMuteButton();
 
         this.waveManager.onStateChange = (state: WaveState) => {
             this.nextWaveButton?.setEnabled(state !== WaveState.SPAWNING);
@@ -172,8 +174,24 @@ export class UIManager {
         this.uiLayer.addChild(this.nextWaveButton);
     }
 
+    private createMuteButton() {
+        this.muteButton = this.spriteService.createSprite(AssetsConstants.UI_MUTE_BTN_ALIAS);
+        this.muteButton.eventMode = "static";
+        this.muteButton.cursor = "pointer";
+        this.muteButton.scale.set(0.1);
+
+        this.muteButton.on("pointerdown", () => {
+            const isMuted = this.soundService.toggleMute();
+            if (this.muteButton) {
+                this.muteButton.alpha = isMuted ? 0.5 : 1.0;
+            }
+        });
+
+        this.uiLayer.addChild(this.muteButton);
+    }
+
     private updateLayout() {
-        if (!this.topInfoPanel || !this.towersPanel || !this.boostersPanel || !this.nextWaveButton || !this.gameContainer) {
+        if (!this.topInfoPanel || !this.towersPanel || !this.boostersPanel || !this.nextWaveButton || !this.gameContainer || !this.muteButton) {
             return;
         }
 
@@ -215,6 +233,12 @@ export class UIManager {
         this.nextWaveButton.position.set(
             screenWidth / 2,
             screenHeight - (this.nextWaveButton.height * uiScale) / 2 - padding
+        );
+
+        const muteMargin = 25;
+        this.muteButton.position.set(
+            screenWidth - muteMargin - (this.muteButton.width / 2),
+            muteMargin + (this.muteButton.height / 2)
         );
 
         const topHeight = this.topInfoPanel.height * uiScale;

@@ -51,7 +51,7 @@ export class BoosterManager {
         this.entityManager.registerObstacle(nodeId);
 
         // TODO: another sound here
-        this.soundService.play(AssetsConstants.SOUND_REGULAR_TOWER_BUILD);
+        this.soundService.play(AssetsConstants.SOUND_ROADBLOCK_BOOSTER);
     }
 
     public getAvailableNodes(): TPathNode[] {

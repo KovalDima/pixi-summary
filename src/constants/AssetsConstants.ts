@@ -23,6 +23,9 @@ export class AssetsConstants {
     public static readonly SOUND_BUILD_PROCESS = "building_process";
     public static readonly SOUND_REGULAR_TOWER_BUILD = "regular_tower_built";
     public static readonly SOUND_FAIL_BUILD = "fail_build";
+    public static readonly SOUND_GAME_OVER = "game_over";
+    public static readonly SOUND_GAME_LOOP = "game_loop";
+    public static readonly SOUND_ROADBLOCK_BOOSTER = "rocks_falling";
 
     public static readonly FONT_VCR_ALIAS = "VCR_OSD_MONO";
 
@@ -36,6 +39,9 @@ export class AssetsConstants {
     public static readonly UI_ITEM_SLOT_ALIAS = "item_holder";
     public static readonly UI_ITEMS_PANEL_ALIAS = "items_holder";
     public static readonly UI_BTN_NEXT_WAVE_ALIAS = "btn_next_wave";
+    public static readonly UI_MUTE_BTN_ALIAS = "mute_btn";
+    public static readonly START_SCREEN_ALIAS = "start_screen";
+    public static readonly START_BTN_ALIAS = "start_btn";
 
     public static readonly COIN_ALIAS = "coin";
 }

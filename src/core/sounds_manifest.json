@@ -4,6 +4,9 @@
     "click": "click.m4a",
     "building_process": "building-process.m4a",
     "regular_tower_built": "regular-tower-built.mp3",
-    "fail_build": "fail-build.wav"
+    "fail_build": "fail-build.wav",
+    "rocks_falling": "rocks_falling.wav",
+    "game_over": "game_over.mp3",
+    "game_loop": "game_loop.m4a"
   }
 }

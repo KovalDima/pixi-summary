@@ -23,6 +23,8 @@ import { BitmapTextService } from "./services/BitmapTextService";
 import { WaveManager } from "./game/waves/WaveManager";
 import { ParticleService } from "./services/ParticleService";
 import { DropManager } from "./game/effects/DropManager";
+import { StartScreen } from "./view/StartScreen";
+import { AssetsConstants } from "./constants/AssetsConstants";
 
 export class App {
     public readonly app: Application;
@@ -33,7 +35,7 @@ export class App {
     private readonly soundService: SoundService;
     private readonly economyService: EconomyService;
     private readonly bitmapTextService: BitmapTextService;
-    private particleService: ParticleService;
+    private readonly particleService: ParticleService;
     private dropManager: DropManager | null = null;
     public gameContainer: ResponsiveContainer | null = null;
     public magicGate: MagicGate | null = null;
@@ -46,6 +48,8 @@ export class App {
     private objectPlacementController: ObjectPlacementController | null = null;
     private waveManager: WaveManager | null = null;
     private uiManager: UIManager | null = null;
+    private startScreen: StartScreen | null = null;
+    private sessionKilledEnemies: number = 0;
     private readonly domEventHelper: DomEventHelper;
 
     constructor(app: Application) {
@@ -160,6 +164,8 @@ export class App {
         };
 
         this.entityManager.on("enemy_killed_at", (data: { position: {x: number, y: number}, reward: number }) => {
+            this.sessionKilledEnemies++;
+
             if (this.dropManager) {
                 this.dropManager.spawnCoin(data.position, () => {
                     this.economyService.addMoney(data.reward);
@@ -169,7 +175,25 @@ export class App {
             }
         });
 
+        this.showStartScreen();
+    }
+
+    private showStartScreen() {
+        this.startScreen = new StartScreen(
+            this.spriteService,
+            this.app.renderer,
+            () => this.startGame()
+        );
+        this.sceneLayerManager.uiLayer.addChild(this.startScreen);
+    }
+
+    private startGame() {
+        if (this.startScreen) {
+            this.startScreen.destroy();
+            this.startScreen = null;
+        }
         this.startGameLoop();
+        this.soundService.playLoop(AssetsConstants.SOUND_GAME_LOOP);
     }
 
     private createMagicGate() {
@@ -200,7 +224,19 @@ export class App {
 
     private handleGameOver() {
         this.app.ticker.stop();
-        const popup = new GameOverPopup(this.app.screen.width, this.app.screen.height, this.bitmapTextService);
+        this.soundService.stop(AssetsConstants.SOUND_GAME_LOOP);
+        this.soundService.play(AssetsConstants.SOUND_GAME_OVER);
+
+        const popup = new GameOverPopup(
+            this.app.screen.width,
+            this.app.screen.height,
+            this.bitmapTextService,
+            {
+                score: this.economyService.getTotalEarned(),
+                killed: this.sessionKilledEnemies
+            },
+            () => window.location.reload()
+        );
         this.sceneLayerManager.uiLayer.addChild(popup);
     }
 

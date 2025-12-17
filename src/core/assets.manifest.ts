@@ -27,6 +27,9 @@ export const manifest = {
                 { alias: AssetsConstants.UI_ITEMS_PANEL_ALIAS, src: "resources/ui/items_holder.png" },
                 { alias: AssetsConstants.UI_BTN_NEXT_WAVE_ALIAS, src: "resources/ui/btn_next_wave.png" },
                 { alias: AssetsConstants.COIN_ALIAS, src: "resources/effects/coin.png" },
+                { alias: AssetsConstants.START_SCREEN_ALIAS, src: "resources/start_screen/start_screen.jpg" },
+                { alias: AssetsConstants.START_BTN_ALIAS, src: "resources/start_screen/start_btn.png" },
+                { alias: AssetsConstants.UI_MUTE_BTN_ALIAS, src: "resources/ui/mute.png" },
             ]
         }
     ],

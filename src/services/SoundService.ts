@@ -5,6 +5,12 @@ type TSoundName = keyof typeof soundManifest.sounds;
 
 export class SoundService {
     private sounds: Map<TSoundName, Howl> = new Map();
+    private isMuted: boolean = false;
+    private readonly LOW_VOLUME_SOUNDS: string[] = [
+        "start_screen",
+        "game_over",
+        "game_loop"
+    ];
 
     constructor() {
         this.initSounds();
@@ -15,15 +21,41 @@ export class SoundService {
         const soundEntries = soundManifest.sounds;
 
         for (const soundName in soundEntries) {
+            const volume = this.LOW_VOLUME_SOUNDS.includes(soundName) ? 0.5 : 1.0;
             const sound = new Howl({
                 src: [`${basePath}${soundEntries[soundName as TSoundName]}`],
+                volume: volume
             });
             this.sounds.set(soundName as TSoundName, sound);
         }
     }
 
     public play(name: TSoundName) {
-        this.getSound(name).play();
+        const sound = this.getSound(name);
+        sound.loop(false);
+        sound.play();
+    }
+
+    public playLoop(name: TSoundName) {
+        const sound = this.getSound(name);
+        sound.loop(true);
+        if (!sound.playing()) {
+            sound.play();
+        }
+    }
+
+    public stopAll() {
+        Howler.stop();
+    }
+
+    public toggleMute() {
+        this.isMuted = !this.isMuted;
+        Howler.mute(this.isMuted);
+        return this.isMuted;
+    }
+
+    public checkMuted() {
+        return this.isMuted;
     }
 
     public stop(name: TSoundName) {
