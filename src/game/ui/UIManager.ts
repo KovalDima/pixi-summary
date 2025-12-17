@@ -1,4 +1,4 @@
-import { Container, type IRenderer, type Sprite } from "pixi.js";
+import { Container, type IRenderer, type Sprite, BitmapText } from "pixi.js";
 import { GameConstants } from "../../constants/GameConstants";
 import { TowerRegistry } from "../towers/TowerRegistry";
 import { AssetsConstants } from "../../constants/AssetsConstants";
@@ -14,6 +14,8 @@ import { NextWaveButton } from "./NextWaveButton";
 import { ItemSlot } from "./ItemSlot";
 import type { ResponsiveContainer } from "../../view/ResponsiveContainer";
 import { WaveManager, WaveState } from "../waves/WaveManager";
+import { Config } from "../../Config";
+import gsap from "gsap";
 
 export class UIManager {
     private readonly uiLayer: Container;
@@ -31,6 +33,8 @@ export class UIManager {
     private nextWaveButton: NextWaveButton | null = null;
     private muteButton: Sprite | null = null;
     private gameContainer: ResponsiveContainer | null = null;
+    private warningLabel: BitmapText | null = null;
+    private isWarningShown: boolean = false;
 
     private readonly onNextWaveClick: () => void;
 
@@ -64,6 +68,7 @@ export class UIManager {
         this.createBoostersPanel();
         this.createNextWaveButton();
         this.createMuteButton();
+        this.createWarningLabel();
 
         this.waveManager.onStateChange = (state: WaveState) => {
             this.nextWaveButton?.setEnabled(state !== WaveState.SPAWNING);
@@ -88,6 +93,46 @@ export class UIManager {
             this.topInfoPanel.updateWave(waveIndex);
             this.topInfoPanel.updateNextWaveTimer(timeToNextWave);
         }
+
+        if (timeToNextWave > 5) {
+            this.isWarningShown = false;
+        }
+
+        if (timeToNextWave <= 5 && timeToNextWave > 0 && !this.isWarningShown) {
+            this.showWarning();
+        }
+    }
+
+    private createWarningLabel() {
+        this.warningLabel = this.bitmapTextService.createText("Next wave is cominG", {
+            fontSize: 50,
+            tint: Config.colors.Yellow,
+        });
+        this.warningLabel.anchor.set(0.5);
+        this.warningLabel.alpha = 0;
+        this.uiLayer.addChild(this.warningLabel);
+    }
+
+    private showWarning() {
+        if (!this.warningLabel) {
+            return;
+        }
+
+        const centerX = this.renderer.screen.width / 2;
+        const centerY = this.renderer.screen.height / 2;
+
+        this.isWarningShown = true;
+        this.warningLabel.position.set(centerX, centerY);
+        this.warningLabel.alpha = 1;
+
+        gsap.delayedCall(1, () => {
+            if (this.warningLabel) {
+                gsap.to(this.warningLabel, {
+                    alpha: 0,
+                    duration: 0.3
+                });
+            }
+        });
     }
 
     public getBalancePosition() {

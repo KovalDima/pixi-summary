@@ -1,0 +1,108 @@
+{"frames": {
+
+"apple.png":
+{
+	"frame": {"x":0,"y":0,"w":229,"h":228},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":229,"h":228},
+	"sourceSize": {"w":229,"h":228}
+},
+"banana.png":
+{
+	"frame": {"x":229,"y":0,"w":247,"h":241},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":247,"h":241},
+	"sourceSize": {"w":247,"h":241}
+},
+"BAR.png":
+{
+	"frame": {"x":476,"y":0,"w":266,"h":88},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":266,"h":88},
+	"sourceSize": {"w":266,"h":88}
+},
+"blueberry.png":
+{
+	"frame": {"x":742,"y":0,"w":241,"h":237},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":241,"h":237},
+	"sourceSize": {"w":241,"h":237}
+},
+"cherry.png":
+{
+	"frame": {"x":0,"y":241,"w":250,"h":248},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":250,"h":248},
+	"sourceSize": {"w":250,"h":248}
+},
+"chest.png":
+{
+	"frame": {"x":250,"y":241,"w":320,"h":299},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":320,"h":299},
+	"sourceSize": {"w":320,"h":299}
+},
+"coin.png":
+{
+	"frame": {"x":570,"y":241,"w":176,"h":176},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":176,"h":176},
+	"sourceSize": {"w":176,"h":176}
+},
+"diamond.png":
+{
+	"frame": {"x":746,"y":241,"w":209,"h":196},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":209,"h":196},
+	"sourceSize": {"w":209,"h":196}
+},
+"lemon.png":
+{
+	"frame": {"x":0,"y":540,"w":194,"h":232},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":194,"h":232},
+	"sourceSize": {"w":194,"h":232}
+},
+"monster.png":
+{
+	"frame": {"x":194,"y":540,"w":256,"h":256},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":256,"h":256},
+	"sourceSize": {"w":256,"h":256}
+},
+"orange.png":
+{
+	"frame": {"x":450,"y":540,"w":238,"h":207},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":238,"h":207},
+	"sourceSize": {"w":238,"h":207}
+},
+"strawberry.png":
+{
+	"frame": {"x":688,"y":540,"w":228,"h":239},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":228,"h":239},
+	"sourceSize": {"w":228,"h":239}
+}},
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.1",
+	"image": "symbols.png",
+	"format": "RGBA8888",
+	"size": {"w":983,"h":796},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:3bcee287043a4b48c631e9e337faa0c7:872a7775ea761bb508bae83b6b8fdcee:d295ed7153fe372207e34d26d380974a$"
+}
+}

@@ -5,7 +5,6 @@ import { ResponsiveContainer, ResponsiveMode } from "./view/ResponsiveContainer"
 import { SceneFactory } from "./core/scene/SceneFactory";
 import { AnimatedSpriteService} from "./services/AnimatedSpriteService";
 import { EntityManager } from "./game/EntityManager";
-import { GameConstants } from "./constants/GameConstants";
 import { SpriteService } from "./services/SpriteService";
 import { ObjectPlacementController } from "./game/placement/ObjectPlacementController";
 import { DomEventHelper } from "./helpers/DomEventHelper";
@@ -51,6 +50,7 @@ export class App {
     private startScreen: StartScreen | null = null;
     private sessionKilledEnemies: number = 0;
     private readonly domEventHelper: DomEventHelper;
+    private gameLoopCallback: ((delta: number) => void) | null = null;
 
     constructor(app: Application) {
         this.app = app;
@@ -66,9 +66,7 @@ export class App {
 
         this.app.stage.eventMode = "static";
 
-        this.setup().then(() => {
-            this.runInitialEffects();
-        });
+        void this.setup();
         this.initDevTools();
     }
 
@@ -98,7 +96,6 @@ export class App {
 
         this.entityManager = new EntityManager(
             this.gameContainer,
-            this.animatedSpriteService,
             (damage) => this.onEnemyReachedFinish(damage)
         );
 
@@ -223,7 +220,11 @@ export class App {
     }
 
     private handleGameOver() {
-        this.app.ticker.stop();
+        if (this.gameLoopCallback) {
+            this.app.ticker.remove(this.gameLoopCallback);
+            this.gameLoopCallback = null;
+        }
+
         this.soundService.stop(AssetsConstants.SOUND_GAME_LOOP);
         this.soundService.play(AssetsConstants.SOUND_GAME_OVER);
 
@@ -231,6 +232,7 @@ export class App {
             this.app.screen.width,
             this.app.screen.height,
             this.bitmapTextService,
+            this.animatedSpriteService,
             {
                 score: this.economyService.getTotalEarned(),
                 killed: this.sessionKilledEnemies
@@ -240,19 +242,8 @@ export class App {
         this.sceneLayerManager.uiLayer.addChild(popup);
     }
 
-    private runInitialEffects() {
-        GameConstants.FLAME_POSITIONS.forEach(position => {
-            this.entityManager?.addFlame({
-                position,
-                scale: 0.1,
-                width: 60,
-                animationSpeed: 0.3
-            });
-        });
-    }
-
     private startGameLoop() {
-        this.app.ticker.add((delta) => {
+        this.gameLoopCallback = (delta: number) => {
             this.entityManager?.update(delta);
             this.waveManager?.update(delta);
 
@@ -265,7 +256,9 @@ export class App {
             }
 
             this.particleService.update(delta);
-        });
+        };
+
+        this.app.ticker.add(this.gameLoopCallback);
     }
 
     private initDevTools() {

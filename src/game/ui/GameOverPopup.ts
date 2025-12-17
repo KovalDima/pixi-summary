@@ -1,9 +1,13 @@
 import { Container, Graphics, type FederatedPointerEvent } from "pixi.js";
 import { Config } from "../../Config";
 import type { BitmapTextService } from "../../services/BitmapTextService";
+import type { AnimatedSpriteService } from "../../services/AnimatedSpriteService";
+import { AssetsConstants } from "../../constants/AssetsConstants";
+import { AnimationConstants } from "../../constants/AnimationConstants";
 
 export class GameOverPopup extends Container {
     private readonly bitmapTextService: BitmapTextService;
+    private readonly animatedSpriteService: AnimatedSpriteService;
     private readonly screenWidth: number;
     private readonly screenHeight: number;
 
@@ -11,15 +15,18 @@ export class GameOverPopup extends Container {
         screenWidth: number,
         screenHeight: number,
         bitmapTextService: BitmapTextService,
+        animatedSpriteService: AnimatedSpriteService,
         stats: { score: number, killed: number },
         onRestart: () => void
     ) {
         super();
         this.bitmapTextService = bitmapTextService;
+        this.animatedSpriteService = animatedSpriteService;
         this.screenWidth = screenWidth;
         this.screenHeight = screenHeight;
 
         this.createBackground();
+        this.createFireAnimation();
         this.createTitle();
         this.createStats(stats);
         this.createRestartButton(onRestart);
@@ -27,7 +34,7 @@ export class GameOverPopup extends Container {
 
     private createBackground() {
         const background = new Graphics();
-        const alpha = 0.85;
+        const alpha = 0.9;
 
         background.beginFill(Config.colors.Black, alpha);
         background.drawRect(0, 0, this.screenWidth, this.screenHeight);
@@ -51,9 +58,9 @@ export class GameOverPopup extends Container {
     private createStats(stats: { score: number, killed: number }) {
         const centerX = this.screenWidth / 2;
         const centerY = this.screenHeight / 2;
-        const gap = 50;
+        const gap = 60;
         const offsetY = 30;
-        const scoreText = this.bitmapTextService.createText(`Total Score ${stats.score}`, {
+        const scoreText = this.bitmapTextService.createText(`Total Score  ${stats.score}`, {
             fontSize: 45,
             tint: Config.colors.White
         });
@@ -97,5 +104,20 @@ export class GameOverPopup extends Container {
         });
 
         this.addChild(container);
+    }
+
+    private createFireAnimation() {
+        const fire = this.animatedSpriteService.createAnimation(
+            AssetsConstants.FLAME_ANIM_ALIAS,
+            AnimationConstants.FLAME
+        );
+
+        fire.width = this.screenWidth;
+        fire.height = 300;
+        fire.anchor.set(0.5, 1);
+        fire.position.set(this.screenWidth / 2, this.screenHeight);
+        fire.animationSpeed = 0.3;
+
+        this.addChild(fire);
     }
 }

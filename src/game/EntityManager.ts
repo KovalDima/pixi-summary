@@ -1,25 +1,13 @@
-import { type Container, type IPointData, utils } from "pixi.js";
-import { AnimatedSpriteService } from "../services/AnimatedSpriteService";
-import { AssetsConstants } from "../constants/AssetsConstants";
-import { AnimationConstants } from "../constants/AnimationConstants";
-import { type SpriteService } from "../services/SpriteService";
+import { type Container, utils } from "pixi.js";
 import { PathfindingService } from "../core/pathfinding/PathfindingService";
 import { MapConfig } from "../configs/MapConfig";
 import { Enemy } from "./entities/Enemy";
 import type { TEnemyConfig } from "./entities/EnemyTypes";
 import { ObjectPool } from "../core/pool/ObjectPool";
 
-export type TFlameConfig = {
-    position: IPointData,
-    scale: number,
-    width: number,
-    animationSpeed: number
-}
-
 // TODO: delete debug code
 export class EntityManager extends utils.EventEmitter {
     private readonly gameContainer: Container;
-    private readonly animatedSpriteService: AnimatedSpriteService;
     private pathfindingService: PathfindingService;
     private enemies: Enemy[] = [];
     private occupiedNodes: Set<string> = new Set();
@@ -28,12 +16,10 @@ export class EntityManager extends utils.EventEmitter {
 
     constructor(
         gameContainer: Container,
-        animatedSpriteService: AnimatedSpriteService,
         onEnemyReachedFinish: (damage: number) => void
     ) {
         super();
         this.gameContainer = gameContainer;
-        this.animatedSpriteService = animatedSpriteService;
         this.onEnemyReachedFinish = onEnemyReachedFinish;
         this.pathfindingService = new PathfindingService(MapConfig.getNodes(), MapConfig.getEdges());
         this.enemyPool = new ObjectPool<Enemy>(() => new Enemy());
@@ -51,19 +37,6 @@ export class EntityManager extends utils.EventEmitter {
 
     public getOccupiedNodes() {
         return this.occupiedNodes;
-    }
-
-    public addFlame(config: TFlameConfig) {
-        const flameAnim = this.animatedSpriteService.createAnimation(
-            AssetsConstants.FLAME_ANIM_ALIAS, AnimationConstants.FLAME
-        );
-
-        flameAnim.position.set(config.position.x, config.position.y);
-        flameAnim.scale.set(config.scale);
-        flameAnim.width = config.width;
-        flameAnim.animationSpeed = config.animationSpeed;
-
-        this.gameContainer.addChild(flameAnim);
     }
 
     public spawnWaveEnemy(config: TEnemyConfig) {
