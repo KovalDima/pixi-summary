@@ -12,6 +12,7 @@ import type { TBoosterConfig } from "../boosters/BoosterTypes";
 import type { TowerManager } from "../towers/TowerManager";
 import type { BoosterManager } from "../boosters/BoosterManager";
 import type { EconomyService } from "../../services/EconomyService";
+import { GameConstants } from "../../constants/GameConstants";
 
 export enum PlaceableItemType {
     TOWER = "tower",
@@ -51,7 +52,7 @@ export class ObjectPlacementController {
     private readonly VALID_TINT = 0xFFFFFF;
     private readonly INVALID_TINT = 0xFF0000;
     private readonly ghostConfig = {
-        scale: 0.14,
+        scale: GameConstants.TOWER_MIN_SCALE,
         alpha: 0.6
     };
 

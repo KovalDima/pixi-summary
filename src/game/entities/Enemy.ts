@@ -32,9 +32,8 @@ export class Enemy extends Container implements IPoolable{
         this.sprite.anchor.set(0.5);
         this.addChild(this.sprite);
 
-        // TODO: not every enemy has a healthBar
-        const barWidth = 140;
-        const barHeight = 14;
+        const barWidth = 70;
+        const barHeight = 7;
         this.healthBar = new HealthBar(100, barWidth, barHeight);
         this.healthBar.position.set(-barWidth / 2, -barWidth / 1.5);
         this.addChild(this.healthBar);

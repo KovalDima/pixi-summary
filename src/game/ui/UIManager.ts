@@ -223,7 +223,7 @@ export class UIManager {
         this.muteButton = this.spriteService.createSprite(AssetsConstants.UI_MUTE_BTN_ALIAS);
         this.muteButton.eventMode = "static";
         this.muteButton.cursor = "pointer";
-        this.muteButton.scale.set(0.1);
+        this.muteButton.scale.set(0.6);
 
         this.muteButton.on("pointerdown", () => {
             const isMuted = this.soundService.toggleMute();

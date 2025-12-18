@@ -72,7 +72,6 @@ export class App {
 
     private async setup() {
         const textures = await AssetManager.loadCoreAssets();
-        await AssetManager.loadGameAssets();
         this.bitmapTextService.init();
 
         const mapScale = 1.1;
@@ -173,6 +172,7 @@ export class App {
         });
 
         this.showStartScreen();
+        await AssetManager.loadGameAssets();
     }
 
     private showStartScreen() {

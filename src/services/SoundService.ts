@@ -7,7 +7,6 @@ export class SoundService {
     private sounds: Map<TSoundName, Howl> = new Map();
     private isMuted: boolean = false;
     private readonly LOW_VOLUME_SOUNDS: string[] = [
-        "start_screen",
         "game_over",
         "game_loop"
     ];
@@ -21,7 +20,7 @@ export class SoundService {
         const soundEntries = soundManifest.sounds;
 
         for (const soundName in soundEntries) {
-            const volume = this.LOW_VOLUME_SOUNDS.includes(soundName) ? 0.5 : 1.0;
+            const volume = this.LOW_VOLUME_SOUNDS.includes(soundName) ? 0.15 : 0.6;
             const sound = new Howl({
                 src: [`${basePath}${soundEntries[soundName as TSoundName]}`],
                 volume: volume
